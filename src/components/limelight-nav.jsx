@@ -1,4 +1,5 @@
-import React, { useState, useRef, useLayoutEffect, cloneElement } from "react";
+// FileName: /src/components/limelight-nav.jsx
+import React, { useState, useRef, useLayoutEffect, cloneElement, useEffect } from "react";
 
 const DefaultHomeIcon = (props) => (
   <svg
@@ -13,6 +14,7 @@ const DefaultHomeIcon = (props) => (
     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
   </svg>
 );
+
 const DefaultCompassIcon = (props) => (
   <svg
     {...props}
@@ -27,6 +29,7 @@ const DefaultCompassIcon = (props) => (
     <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
   </svg>
 );
+
 const DefaultBellIcon = (props) => (
   <svg
     {...props}
@@ -65,6 +68,13 @@ export const LimelightNav = ({
   const [isReady, setIsReady] = useState(false);
   const navItemRefs = useRef([]);
   const limelightRef = useRef(null);
+
+  // Add this useEffect to sync with external defaultActiveIndex changes
+  useEffect(() => {
+    if (defaultActiveIndex !== activeIndex) {
+      setActiveIndex(defaultActiveIndex);
+    }
+  }, [defaultActiveIndex]);
 
   useLayoutEffect(() => {
     if (items.length === 0) return;
@@ -112,7 +122,7 @@ export const LimelightNav = ({
           onClick={() => handleItemClick(index, onClick)}
           aria-label={label}
         >
-          {cloneElement(icon, {
+         {cloneElement(icon, {
             className: `w-6 h-6 transition-opacity duration-100 ease-in-out ${
               activeIndex === index ? "opacity-100" : "opacity-40"
             } ${icon.props.className || ""} ${iconClassName || ""}`,
