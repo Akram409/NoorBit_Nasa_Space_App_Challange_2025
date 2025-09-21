@@ -5,10 +5,10 @@ import { GooeyText } from "@/components/ui/gooey-text-morphing";
 export function SparklesPreview() {
   return (
     <div className="h-[100vh] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
-      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
-        Acme
+      <h1 className="md:text-6xl text-4xl lg:text-8xl font-extrabold text-center text-white relative z-20">
+        Building Sustainable Cities
       </h1>
-      <div className="w-[40rem] h-40 relative">
+      <div className="w-[35rem] h-40 relative">
         {/* Gradients */}
         <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
         <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
@@ -47,8 +47,8 @@ export function SparklesPreviewDark() {
           speed={1}
         />
       </div>
-      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
-        Build faster
+      <h1 className="md:text-6xl text-4xl lg:text-8xl font-extrabold text-center text-white relative z-20">
+        Designing Resilient Futures
       </h1>
     </div>
   );
@@ -72,18 +72,18 @@ export function SparklesPreviewColorful() {
 
       <div className="flex flex-col items-center justify-center z-20">
         <h1 className="md:text-6xl text-4xl lg:text-8xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-          Unlock Your Future
+          Innovating for Sustainability
         </h1>
         <div className="h-[200px] flex items-center justify-center">
           <GooeyText
-            texts={["Innovation", "Creativity", "Inspire", "Change"]}
+            texts={["Resilience", "Green", "Action", "Sustainability"]}
             morphTime={1}
             cooldownTime={0.25}
             className="md:text-6xl text-3xl lg:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400"
           />
         </div>
         <p className="text-neutral-300 cursor-default text-center text-xl lg:text-2xl mt-4">
-          The journey starts here.
+          Building a better tomorrow, today.
         </p>
       </div>
     </div>

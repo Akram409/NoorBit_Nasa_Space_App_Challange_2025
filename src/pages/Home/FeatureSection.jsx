@@ -3,7 +3,7 @@ import { FeaturesSectionWithHoverEffects } from "@/components/feature-section-wi
 
 function FeaturesSection() {
   return (
-    <div className="min-h-screen w-full">
+    <div className=" w-full">
       <div className="aw-full">
         <FeaturesSectionWithHoverEffects />
       </div>
