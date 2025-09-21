@@ -1,0 +1,2322 @@
+i will create a hackaton project for 2025 NASA Space Apps Challenge - Data
+Pathways to Healthy Cities and Human
+Settlements where the problem was:
+Problem Identification
+Climate change and rapid urbanization pose new challenges for urban areas around the
+world. The rapid growth of cities has led to various complex issues affecting both people
+and the environment. These issues include air pollution, water scarcity, excessive
+urbanization leading to less green spaces, and the effects of extreme weather such as
+heatwaves, floods, and droughts. These issues require a detailed approach to urban
+planning to ensure cities remain sustainable and livable
+
+
+for this i want to use the component of 21st.dev website where each component have a code promt for each component
+so i provide all component code promt and at first create me a landing page using this component
+
+in my project i did'nt use any typescript code
+
+hero section code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+sparkles.tsx
+"use client";
+import React, { useId, useMemo } from "react";
+import { useEffect, useState } from "react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import type { Container, SingleOrMultiple } from "@tsparticles/engine";
+import { loadSlim } from "@tsparticles/slim";
+import { cn } from "@/lib/utils";
+import { motion, useAnimation } from "framer-motion";
+
+type ParticlesProps = {
+  id?: string;
+  className?: string;
+  background?: string;
+  particleSize?: number;
+  minSize?: number;
+  maxSize?: number;
+  speed?: number;
+  particleColor?: string;
+  particleDensity?: number;
+};
+export const SparklesCore = (props: ParticlesProps) => {
+  const {
+    id,
+    className,
+    background,
+    minSize,
+    maxSize,
+    speed,
+    particleColor,
+    particleDensity,
+  } = props;
+  const [init, setInit] = useState(false);
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
+  const controls = useAnimation();
+
+  const particlesLoaded = async (container?: Container) => {
+    if (container) {
+      controls.start({
+        opacity: 1,
+        transition: {
+          duration: 1,
+        },
+      });
+    }
+  };
+
+  const generatedId = useId();
+  return (
+    <motion.div animate={controls} className={cn("opacity-0", className)}>
+      {init && (
+        <Particles
+          id={id || generatedId}
+          className={cn("h-full w-full")}
+          particlesLoaded={particlesLoaded}
+          options={{
+            background: {
+              color: {
+                value: background || "#0d47a1",
+              },
+            },
+            fullScreen: {
+              enable: false,
+              zIndex: 1,
+            },
+
+            fpsLimit: 120,
+            interactivity: {
+              events: {
+                onClick: {
+                  enable: true,
+                  mode: "push",
+                },
+                onHover: {
+                  enable: false,
+                  mode: "repulse",
+                },
+                resize: true as any,
+              },
+              modes: {
+                push: {
+                  quantity: 4,
+                },
+                repulse: {
+                  distance: 200,
+                  duration: 0.4,
+                },
+              },
+            },
+            particles: {
+              bounce: {
+                horizontal: {
+                  value: 1,
+                },
+                vertical: {
+                  value: 1,
+                },
+              },
+              collisions: {
+                absorb: {
+                  speed: 2,
+                },
+                bounce: {
+                  horizontal: {
+                    value: 1,
+                  },
+                  vertical: {
+                    value: 1,
+                  },
+                },
+                enable: false,
+                maxSpeed: 50,
+                mode: "bounce",
+                overlap: {
+                  enable: true,
+                  retries: 0,
+                },
+              },
+              color: {
+                value: particleColor || "#ffffff",
+                animation: {
+                  h: {
+                    count: 0,
+                    enable: false,
+                    speed: 1,
+                    decay: 0,
+                    delay: 0,
+                    sync: true,
+                    offset: 0,
+                  },
+                  s: {
+                    count: 0,
+                    enable: false,
+                    speed: 1,
+                    decay: 0,
+                    delay: 0,
+                    sync: true,
+                    offset: 0,
+                  },
+                  l: {
+                    count: 0,
+                    enable: false,
+                    speed: 1,
+                    decay: 0,
+                    delay: 0,
+                    sync: true,
+                    offset: 0,
+                  },
+                },
+              },
+              effect: {
+                close: true,
+                fill: true,
+                options: {},
+                type: {} as SingleOrMultiple<string> | undefined,
+              },
+              groups: {},
+              move: {
+                angle: {
+                  offset: 0,
+                  value: 90,
+                },
+                attract: {
+                  distance: 200,
+                  enable: false,
+                  rotate: {
+                    x: 3000,
+                    y: 3000,
+                  },
+                },
+                center: {
+                  x: 50,
+                  y: 50,
+                  mode: "percent",
+                  radius: 0,
+                },
+                decay: 0,
+                distance: {},
+                direction: "none",
+                drift: 0,
+                enable: true,
+                gravity: {
+                  acceleration: 9.81,
+                  enable: false,
+                  inverse: false,
+                  maxSpeed: 50,
+                },
+                path: {
+                  clamp: true,
+                  delay: {
+                    value: 0,
+                  },
+                  enable: false,
+                  options: {},
+                },
+                outModes: {
+                  default: "out",
+                },
+                random: false,
+                size: false,
+                speed: {
+                  min: 0.1,
+                  max: 1,
+                },
+                spin: {
+                  acceleration: 0,
+                  enable: false,
+                },
+                straight: false,
+                trail: {
+                  enable: false,
+                  length: 10,
+                  fill: {},
+                },
+                vibrate: false,
+                warp: false,
+              },
+              number: {
+                density: {
+                  enable: true,
+                  width: 400,
+                  height: 400,
+                },
+                limit: {
+                  mode: "delete",
+                  value: 0,
+                },
+                value: particleDensity || 120,
+              },
+              opacity: {
+                value: {
+                  min: 0.1,
+                  max: 1,
+                },
+                animation: {
+                  count: 0,
+                  enable: true,
+                  speed: speed || 4,
+                  decay: 0,
+                  delay: 0,
+                  sync: false,
+                  mode: "auto",
+                  startValue: "random",
+                  destroy: "none",
+                },
+              },
+              reduceDuplicates: false,
+              shadow: {
+                blur: 0,
+                color: {
+                  value: "#000",
+                },
+                enable: false,
+                offset: {
+                  x: 0,
+                  y: 0,
+                },
+              },
+              shape: {
+                close: true,
+                fill: true,
+                options: {},
+                type: "circle",
+              },
+              size: {
+                value: {
+                  min: minSize || 1,
+                  max: maxSize || 3,
+                },
+                animation: {
+                  count: 0,
+                  enable: false,
+                  speed: 5,
+                  decay: 0,
+                  delay: 0,
+                  sync: false,
+                  mode: "auto",
+                  startValue: "random",
+                  destroy: "none",
+                },
+              },
+              stroke: {
+                width: 0,
+              },
+              zIndex: {
+                value: 0,
+                opacityRate: 1,
+                sizeRate: 1,
+                velocityRate: 1,
+              },
+              destroy: {
+                bounds: {},
+                mode: "none",
+                split: {
+                  count: 1,
+                  factor: {
+                    value: 3,
+                  },
+                  rate: {
+                    value: {
+                      min: 4,
+                      max: 9,
+                    },
+                  },
+                  sizeOffset: true,
+                },
+              },
+              roll: {
+                darken: {
+                  enable: false,
+                  value: 0,
+                },
+                enable: false,
+                enlighten: {
+                  enable: false,
+                  value: 0,
+                },
+                mode: "vertical",
+                speed: 25,
+              },
+              tilt: {
+                value: 0,
+                animation: {
+                  enable: false,
+                  speed: 0,
+                  decay: 0,
+                  sync: false,
+                },
+                direction: "clockwise",
+                enable: false,
+              },
+              twinkle: {
+                lines: {
+                  enable: false,
+                  frequency: 0.05,
+                  opacity: 1,
+                },
+                particles: {
+                  enable: false,
+                  frequency: 0.05,
+                  opacity: 1,
+                },
+              },
+              wobble: {
+                distance: 5,
+                enable: false,
+                speed: {
+                  angle: 50,
+                  move: 10,
+                },
+              },
+              life: {
+                count: 0,
+                delay: {
+                  value: 0,
+                  sync: false,
+                },
+                duration: {
+                  value: 0,
+                  sync: false,
+                },
+              },
+              rotate: {
+                value: 0,
+                animation: {
+                  enable: false,
+                  speed: 0,
+                  decay: 0,
+                  sync: false,
+                },
+                direction: "clockwise",
+                path: false,
+              },
+              orbit: {
+                animation: {
+                  count: 0,
+                  enable: false,
+                  speed: 1,
+                  decay: 0,
+                  delay: 0,
+                  sync: false,
+                },
+                enable: false,
+                opacity: 1,
+                rotation: {
+                  value: 45,
+                },
+                width: 1,
+              },
+              links: {
+                blink: false,
+                color: {
+                  value: "#fff",
+                },
+                consent: false,
+                distance: 100,
+                enable: false,
+                frequency: 1,
+                opacity: 1,
+                shadow: {
+                  blur: 5,
+                  color: {
+                    value: "#000",
+                  },
+                  enable: false,
+                },
+                triangles: {
+                  enable: false,
+                  frequency: 1,
+                },
+                width: 1,
+                warp: false,
+              },
+              repulse: {
+                value: 0,
+                enabled: false,
+                distance: 1,
+                duration: 1,
+                factor: 1,
+                speed: 1,
+              },
+            },
+            detectRetina: true,
+          }}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+
+demo.tsx
+"use client";
+import React from "react";
+import { SparklesCore } from "@/components/ui/sparkles"
+
+export function SparklesPreview() {
+  return (
+    <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
+        Acme
+      </h1>
+      <div className="w-[40rem] h-40 relative">
+        {/* Gradients */}
+        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
+        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
+        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
+        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
+
+        {/* Core component */}
+        <SparklesCore
+          background="transparent"
+          minSize={0.4}
+          maxSize={1}
+          particleDensity={1200}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+        />
+
+        {/* Radial Gradient to prevent sharp edges */}
+        <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
+      </div>
+    </div>
+  );
+}
+
+export function SparklesPreviewDark() {
+  return (
+    <div className="h-[40rem] relative w-full bg-slate-950 flex flex-col items-center justify-center overflow-hidden rounded-md">
+      <div className="w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlesfullpage"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={100}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+          speed={1}
+        />
+      </div>
+      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
+        Build faster
+      </h1>
+    </div>
+  );
+}
+
+export function SparklesPreviewColorful() {
+  return (
+    <div className="h-[40rem] relative w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+      <div className="w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlescolorful"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={100}
+          className="w-full h-full"
+          particleColor="#00ff00"
+          speed={0.5}
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-4 relative z-20">
+        <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+          The Future
+        </h1>
+        <p className="text-neutral-300 cursor-default text-center">
+          is brighter than you think
+        </p>
+      </div>
+    </div>
+  );
+}
+
+```
+
+Install NPM dependencies:
+```bash
+framer-motion, @tsparticles/slim, @tsparticles/react, @tsparticles/engine
+```
+
+
+
+feature section:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+feature-section-with-hover-effects.tsx
+import { cn } from "@/lib/utils";
+import {
+  IconAdjustmentsBolt,
+  IconCloud,
+  IconCurrencyDollar,
+  IconEaseInOut,
+  IconHeart,
+  IconHelp,
+  IconRouteAltLeft,
+  IconTerminal2,
+} from "@tabler/icons-react";
+
+export function FeaturesSectionWithHoverEffects() {
+  const features = [
+    {
+      title: "Built for developers",
+      description:
+        "Built for engineers, developers, dreamers, thinkers and doers.",
+      icon: <IconTerminal2 />,
+    },
+    {
+      title: "Ease of use",
+      description:
+        "It's as easy as using an Apple, and as expensive as buying one.",
+      icon: <IconEaseInOut />,
+    },
+    {
+      title: "Pricing like no other",
+      description:
+        "Our prices are best in the market. No cap, no lock, no credit card required.",
+      icon: <IconCurrencyDollar />,
+    },
+    {
+      title: "100% Uptime guarantee",
+      description: "We just cannot be taken down by anyone.",
+      icon: <IconCloud />,
+    },
+    {
+      title: "Multi-tenant Architecture",
+      description: "You can simply share passwords instead of buying new seats",
+      icon: <IconRouteAltLeft />,
+    },
+    {
+      title: "24/7 Customer Support",
+      description:
+        "We are available a 100% of the time. Atleast our AI Agents are.",
+      icon: <IconHelp />,
+    },
+    {
+      title: "Money back guarantee",
+      description:
+        "If you donot like EveryAI, we will convince you to like us.",
+      icon: <IconAdjustmentsBolt />,
+    },
+    {
+      title: "And everything else",
+      description: "I just ran out of copy ideas. Accept my sincere apologies",
+      icon: <IconHeart />,
+    },
+  ];
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  relative z-10 py-10 max-w-7xl mx-auto">
+      {features.map((feature, index) => (
+        <Feature key={feature.title} {...feature} index={index} />
+      ))}
+    </div>
+  );
+}
+
+const Feature = ({
+  title,
+  description,
+  icon,
+  index,
+}: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  index: number;
+}) => {
+  return (
+    <div
+      className={cn(
+        "flex flex-col lg:border-r  py-10 relative group/feature dark:border-neutral-800",
+        (index === 0 || index === 4) && "lg:border-l dark:border-neutral-800",
+        index < 4 && "lg:border-b dark:border-neutral-800"
+      )}
+    >
+      {index < 4 && (
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+      )}
+      {index >= 4 && (
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+      )}
+      <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
+        {icon}
+      </div>
+      <div className="text-lg font-bold mb-2 relative z-10 px-10">
+        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-blue-500 transition-all duration-200 origin-center" />
+        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
+          {title}
+        </span>
+      </div>
+      <p className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xs relative z-10 px-10">
+        {description}
+      </p>
+    </div>
+  );
+};
+
+
+demo.tsx
+import React from "react";
+import { FeaturesSectionWithHoverEffects } from "@/components/blocks/feature-section-with-hover-effects";
+
+function FeaturesSectionWithHoverEffectsDemo() {
+  return (
+    <div className="min-h-screen w-full">
+      <div className="absolute top-0 left-0 w-full">
+        <FeaturesSectionWithHoverEffects />
+      </div>
+    </div>
+  );
+}
+
+export { FeaturesSectionWithHoverEffectsDemo };
+```
+
+Install NPM dependencies:
+```bash
+@tabler/icons-react
+```
+
+feature section-2 code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+radial-orbital-timeline.tsx
+"use client";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, Link, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface TimelineItem {
+  id: number;
+  title: string;
+  date: string;
+  content: string;
+  category: string;
+  icon: React.ElementType;
+  relatedIds: number[];
+  status: "completed" | "in-progress" | "pending";
+  energy: number;
+}
+
+interface RadialOrbitalTimelineProps {
+  timelineData: TimelineItem[];
+}
+
+export default function RadialOrbitalTimeline({
+  timelineData,
+}: RadialOrbitalTimelineProps) {
+  const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [viewMode, setViewMode] = useState<"orbital">("orbital");
+  const [rotationAngle, setRotationAngle] = useState<number>(0);
+  const [autoRotate, setAutoRotate] = useState<boolean>(true);
+  const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({});
+  const [centerOffset, setCenterOffset] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const orbitRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === containerRef.current || e.target === orbitRef.current) {
+      setExpandedItems({});
+      setActiveNodeId(null);
+      setPulseEffect({});
+      setAutoRotate(true);
+    }
+  };
+
+  const toggleItem = (id: number) => {
+    setExpandedItems((prev) => {
+      const newState = { ...prev };
+      Object.keys(newState).forEach((key) => {
+        if (parseInt(key) !== id) {
+          newState[parseInt(key)] = false;
+        }
+      });
+
+      newState[id] = !prev[id];
+
+      if (!prev[id]) {
+        setActiveNodeId(id);
+        setAutoRotate(false);
+
+        const relatedItems = getRelatedItems(id);
+        const newPulseEffect: Record<number, boolean> = {};
+        relatedItems.forEach((relId) => {
+          newPulseEffect[relId] = true;
+        });
+        setPulseEffect(newPulseEffect);
+
+        centerViewOnNode(id);
+      } else {
+        setActiveNodeId(null);
+        setAutoRotate(true);
+        setPulseEffect({});
+      }
+
+      return newState;
+    });
+  };
+
+  useEffect(() => {
+    let rotationTimer: NodeJS.Timeout;
+
+    if (autoRotate && viewMode === "orbital") {
+      rotationTimer = setInterval(() => {
+        setRotationAngle((prev) => {
+          const newAngle = (prev + 0.3) % 360;
+          return Number(newAngle.toFixed(3));
+        });
+      }, 50);
+    }
+
+    return () => {
+      if (rotationTimer) {
+        clearInterval(rotationTimer);
+      }
+    };
+  }, [autoRotate, viewMode]);
+
+  const centerViewOnNode = (nodeId: number) => {
+    if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
+
+    const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
+    const totalNodes = timelineData.length;
+    const targetAngle = (nodeIndex / totalNodes) * 360;
+
+    setRotationAngle(270 - targetAngle);
+  };
+
+  const calculateNodePosition = (index: number, total: number) => {
+    const angle = ((index / total) * 360 + rotationAngle) % 360;
+    const radius = 200;
+    const radian = (angle * Math.PI) / 180;
+
+    const x = radius * Math.cos(radian) + centerOffset.x;
+    const y = radius * Math.sin(radian) + centerOffset.y;
+
+    const zIndex = Math.round(100 + 50 * Math.cos(radian));
+    const opacity = Math.max(
+      0.4,
+      Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2))
+    );
+
+    return { x, y, angle, zIndex, opacity };
+  };
+
+  const getRelatedItems = (itemId: number): number[] => {
+    const currentItem = timelineData.find((item) => item.id === itemId);
+    return currentItem ? currentItem.relatedIds : [];
+  };
+
+  const isRelatedToActive = (itemId: number): boolean => {
+    if (!activeNodeId) return false;
+    const relatedItems = getRelatedItems(activeNodeId);
+    return relatedItems.includes(itemId);
+  };
+
+  const getStatusStyles = (status: TimelineItem["status"]): string => {
+    switch (status) {
+      case "completed":
+        return "text-white bg-black border-white";
+      case "in-progress":
+        return "text-black bg-white border-black";
+      case "pending":
+        return "text-white bg-black/40 border-white/50";
+      default:
+        return "text-white bg-black/40 border-white/50";
+    }
+  };
+
+  return (
+    <div
+      className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
+      ref={containerRef}
+      onClick={handleContainerClick}
+    >
+      <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
+        <div
+          className="absolute w-full h-full flex items-center justify-center"
+          ref={orbitRef}
+          style={{
+            perspective: "1000px",
+            transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)`,
+          }}
+        >
+          <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500 animate-pulse flex items-center justify-center z-10">
+            <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
+            <div
+              className="absolute w-24 h-24 rounded-full border border-white/10 animate-ping opacity-50"
+              style={{ animationDelay: "0.5s" }}
+            ></div>
+            <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md"></div>
+          </div>
+
+          <div className="absolute w-96 h-96 rounded-full border border-white/10"></div>
+
+          {timelineData.map((item, index) => {
+            const position = calculateNodePosition(index, timelineData.length);
+            const isExpanded = expandedItems[item.id];
+            const isRelated = isRelatedToActive(item.id);
+            const isPulsing = pulseEffect[item.id];
+            const Icon = item.icon;
+
+            const nodeStyle = {
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              zIndex: isExpanded ? 200 : position.zIndex,
+              opacity: isExpanded ? 1 : position.opacity,
+            };
+
+            return (
+              <div
+                key={item.id}
+                ref={(el) => (nodeRefs.current[item.id] = el)}
+                className="absolute transition-all duration-700 cursor-pointer"
+                style={nodeStyle}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleItem(item.id);
+                }}
+              >
+                <div
+                  className={`absolute rounded-full -inset-1 ${
+                    isPulsing ? "animate-pulse duration-1000" : ""
+                  }`}
+                  style={{
+                    background: `radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)`,
+                    width: `${item.energy * 0.5 + 40}px`,
+                    height: `${item.energy * 0.5 + 40}px`,
+                    left: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
+                    top: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
+                  }}
+                ></div>
+
+                <div
+                  className={`
+                  w-10 h-10 rounded-full flex items-center justify-center
+                  ${
+                    isExpanded
+                      ? "bg-white text-black"
+                      : isRelated
+                      ? "bg-white/50 text-black"
+                      : "bg-black text-white"
+                  }
+                  border-2 
+                  ${
+                    isExpanded
+                      ? "border-white shadow-lg shadow-white/30"
+                      : isRelated
+                      ? "border-white animate-pulse"
+                      : "border-white/40"
+                  }
+                  transition-all duration-300 transform
+                  ${isExpanded ? "scale-150" : ""}
+                `}
+                >
+                  <Icon size={16} />
+                </div>
+
+                <div
+                  className={`
+                  absolute top-12  whitespace-nowrap
+                  text-xs font-semibold tracking-wider
+                  transition-all duration-300
+                  ${isExpanded ? "text-white scale-125" : "text-white/70"}
+                `}
+                >
+                  {item.title}
+                </div>
+
+                {isExpanded && (
+                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/90 backdrop-blur-lg border-white/30 shadow-xl shadow-white/10 overflow-visible">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <Badge
+                          className={`px-2 text-xs ${getStatusStyles(
+                            item.status
+                          )}`}
+                        >
+                          {item.status === "completed"
+                            ? "COMPLETE"
+                            : item.status === "in-progress"
+                            ? "IN PROGRESS"
+                            : "PENDING"}
+                        </Badge>
+                        <span className="text-xs font-mono text-white/50">
+                          {item.date}
+                        </span>
+                      </div>
+                      <CardTitle className="text-sm mt-2">
+                        {item.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-xs text-white/80">
+                      <p>{item.content}</p>
+
+                      <div className="mt-4 pt-3 border-t border-white/10">
+                        <div className="flex justify-between items-center text-xs mb-1">
+                          <span className="flex items-center">
+                            <Zap size={10} className="mr-1" />
+                            Energy Level
+                          </span>
+                          <span className="font-mono">{item.energy}%</span>
+                        </div>
+                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                            style={{ width: `${item.energy}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {item.relatedIds.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-white/10">
+                          <div className="flex items-center mb-2">
+                            <Link size={10} className="text-white/70 mr-1" />
+                            <h4 className="text-xs uppercase tracking-wider font-medium text-white/70">
+                              Connected Nodes
+                            </h4>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {item.relatedIds.map((relatedId) => {
+                              const relatedItem = timelineData.find(
+                                (i) => i.id === relatedId
+                              );
+                              return (
+                                <Button
+                                  key={relatedId}
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center h-6 px-2 py-0 text-xs rounded-none border-white/20 bg-transparent hover:bg-white/10 text-white/80 hover:text-white transition-all"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleItem(relatedId);
+                                  }}
+                                >
+                                  {relatedItem?.title}
+                                  <ArrowRight
+                                    size={8}
+                                    className="ml-1 text-white/60"
+                                  />
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+demo.tsx
+"use client";
+
+import { Calendar, Code, FileText, User, Clock } from "lucide-react";
+import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
+
+const timelineData = [
+  {
+    id: 1,
+    title: "Planning",
+    date: "Jan 2024",
+    content: "Project planning and requirements gathering phase.",
+    category: "Planning",
+    icon: Calendar,
+    relatedIds: [2],
+    status: "completed" as const,
+    energy: 100,
+  },
+  {
+    id: 2,
+    title: "Design",
+    date: "Feb 2024",
+    content: "UI/UX design and system architecture.",
+    category: "Design",
+    icon: FileText,
+    relatedIds: [1, 3],
+    status: "completed" as const,
+    energy: 90,
+  },
+  {
+    id: 3,
+    title: "Development",
+    date: "Mar 2024",
+    content: "Core features implementation and testing.",
+    category: "Development",
+    icon: Code,
+    relatedIds: [2, 4],
+    status: "in-progress" as const,
+    energy: 60,
+  },
+  {
+    id: 4,
+    title: "Testing",
+    date: "Apr 2024",
+    content: "User testing and bug fixes.",
+    category: "Testing",
+    icon: User,
+    relatedIds: [3, 5],
+    status: "pending" as const,
+    energy: 30,
+  },
+  {
+    id: 5,
+    title: "Release",
+    date: "May 2024",
+    content: "Final deployment and release.",
+    category: "Release",
+    icon: Clock,
+    relatedIds: [4],
+    status: "pending" as const,
+    energy: 10,
+  },
+];
+
+export function RadialOrbitalTimelineDemo() {
+  return (
+    <>
+      <RadialOrbitalTimeline timelineData={timelineData} />
+    </>
+  );
+}
+
+export default {
+  RadialOrbitalTimelineDemo,
+};
+
+```
+
+Copy-paste these files for dependencies:
+```tsx
+shadcn/badge
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        outline: "text-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
+}
+
+export { Badge, badgeVariants }
+
+```
+```tsx
+shadcn/button
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+)
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  },
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }
+
+```
+```tsx
+shadcn/card
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+const Card = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      className,
+    )}
+    {...props}
+  />
+))
+Card.displayName = "Card"
+
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    {...props}
+  />
+))
+CardHeader.displayName = "CardHeader"
+
+const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className,
+    )}
+    {...props}
+  />
+))
+CardTitle.displayName = "CardTitle"
+
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+CardDescription.displayName = "CardDescription"
+
+const CardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+))
+CardContent.displayName = "CardContent"
+
+const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex items-center p-6 pt-0", className)}
+    {...props}
+  />
+))
+CardFooter.displayName = "CardFooter"
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+
+```
+
+Install NPM dependencies:
+```bash
+lucide-react, class-variance-authority, @radix-ui/react-slot
+```
+
+Extend existing globals.css with this code:
+```css
+@import "tailwindcss"
+
+/* Animation for the pulsing effect */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation for the ping effect */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Custom animations for the orbital timeline */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+.duration-700 {
+  transition-duration: 700ms;
+}
+
+.duration-1000 {
+  transition-duration: 1000ms;
+}
+
+/* Backdrop blur */
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+}
+
+/* Custom gradients */
+.bg-gradient-orbital {
+  background: linear-gradient(to bottom right, #6366f1, #3b82f6, #14b8a6);
+}
+
+/* Z-index utilities */
+.z-10 {
+  z-index: 10;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+/* Custom shadows */
+.shadow-orbital {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Custom transforms */
+.scale-125 {
+  transform: scale(1.25);
+}
+
+.scale-150 {
+  transform: scale(1.5);
+}
+
+/* Custom opacity values */
+.opacity-70 {
+  opacity: 0.7;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+/* Custom border opacity */
+.border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.border-white\/30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.border-white\/40 {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Custom background opacity */
+.bg-black\/90 {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.bg-white\/50 {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.bg-white\/80 {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Custom text opacity */
+.text-white\/70 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.text-white\/80 {
+  color: rgba(255, 255, 255, 0.8);
+} 
+```
+
+
+carocel code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+circular-gallery.tsx
+import React, { useState, useEffect, useRef, HTMLAttributes } from 'react';
+
+// A simple utility for conditional class names
+const cn = (...classes: (string | undefined | null | false)[]) => {
+  return classes.filter(Boolean).join(' ');
+}
+
+// Define the type for a single gallery item
+export interface GalleryItem {
+  common: string;
+  binomial: string;
+  photo: {
+    url: string; 
+    text: string;
+    pos?: string;
+    by: string;
+  };
+}
+
+// Define the props for the CircularGallery component
+interface CircularGalleryProps extends HTMLAttributes<HTMLDivElement> {
+  items: GalleryItem[];
+  /** Controls how far the items are from the center. */
+  radius?: number;
+  /** Controls the speed of auto-rotation when not scrolling. */
+  autoRotateSpeed?: number;
+}
+
+const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
+  ({ items, className, radius = 600, autoRotateSpeed = 0.02, ...props }, ref) => {
+    const [rotation, setRotation] = useState(0);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const animationFrameRef = useRef<number | null>(null);
+
+    // Effect to handle scroll-based rotation
+    useEffect(() => {
+      const handleScroll = () => {
+        setIsScrolling(true);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = scrollableHeight > 0 ? window.scrollY / scrollableHeight : 0;
+        const scrollRotation = scrollProgress * 360;
+        setRotation(scrollRotation);
+
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 150);
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    // Effect for auto-rotation when not scrolling
+    useEffect(() => {
+      const autoRotate = () => {
+        if (!isScrolling) {
+          setRotation(prev => prev + autoRotateSpeed);
+        }
+        animationFrameRef.current = requestAnimationFrame(autoRotate);
+      };
+
+      animationFrameRef.current = requestAnimationFrame(autoRotate);
+
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    }, [isScrolling, autoRotateSpeed]);
+
+    const anglePerItem = 360 / items.length;
+    
+    return (
+      <div
+        ref={ref}
+        role="region"
+        aria-label="Circular 3D Gallery"
+        className={cn("relative w-full h-full flex items-center justify-center", className)}
+        style={{ perspective: '2000px' }}
+        {...props}
+      >
+        <div
+          className="relative w-full h-full"
+          style={{
+            transform: `rotateY(${rotation}deg)`,
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {items.map((item, i) => {
+            const itemAngle = i * anglePerItem;
+            const totalRotation = rotation % 360;
+            const relativeAngle = (itemAngle + totalRotation + 360) % 360;
+            const normalizedAngle = Math.abs(relativeAngle > 180 ? 360 - relativeAngle : relativeAngle);
+            const opacity = Math.max(0.3, 1 - (normalizedAngle / 180));
+
+            return (
+              <div
+                key={item.photo.url} 
+                role="group"
+                aria-label={item.common}
+                className="absolute w-[300px] h-[400px]"
+                style={{
+                  transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
+                  left: '50%',
+                  top: '50%',
+                  marginLeft: '-150px',
+                  marginTop: '-200px',
+                  opacity: opacity,
+                  transition: 'opacity 0.3s linear'
+                }}
+              >
+                <div className="relative w-full h-full rounded-lg shadow-2xl overflow-hidden group border border-border bg-card/70 dark:bg-card/30 backdrop-blur-lg">
+                  <img
+                    src={item.photo.url}
+                    alt={item.photo.text}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ objectPosition: item.photo.pos || 'center' }}
+                  />
+                  {/* Replaced text-primary-foreground with text-white for consistent color */}
+                  <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent text-white">
+                    <h2 className="text-xl font-bold">{item.common}</h2>
+                    <em className="text-sm italic opacity-80">{item.binomial}</em>
+                    <p className="text-xs mt-2 opacity-70">Photo by: {item.photo.by}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+);
+
+CircularGallery.displayName = 'CircularGallery';
+
+export { CircularGallery };
+
+
+demo.tsx
+import React from 'react';
+import { CircularGallery, GalleryItem } from '@/components/ui/circular-gallery';
+
+const galleryData: GalleryItem[] = [
+	{
+		common: 'Lion',
+		binomial: 'Panthera leo',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1583499871880-de841d1ace2a?w=900&auto=format&fit=crop&q=80',
+			text: 'lion couple kissing on a brown rock',
+			pos: '47% 35%',
+			by: 'Clément Roy'
+		}
+	},
+	{
+		common: 'Asiatic elephant',
+		binomial: 'Elephas maximus',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1571406761758-9a3eed5338ef?w=900&auto=format&fit=crop&q=80',
+			text: 'herd of Sri Lankan elephants walking away from a river',
+			pos: '75% 65%',
+			by: 'Alex Azabache'
+		}
+	},
+	{
+		common: 'Red-tailed black cockatoo',
+		binomial: 'Calyptorhynchus banksii',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1619664208054-41eefeab29e9?w=900&auto=format&fit=crop&q=80',
+			text: 'close-up of a black cockatoo',
+			pos: '53% 43%',
+			by: 'David Clode'
+		}
+	},
+	{
+		common: 'Dromedary',
+		binomial: 'Camelus dromedarius',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1662841238473-f4b137e123cb?w=900&auto=format&fit=crop&q=80',
+			text: 'camel and her new born calf walking in the Sahara desert',
+			pos: '65% 65%',
+			by: 'Moaz Tobok'
+		}
+	},
+	{
+		common: 'Polar bear',
+		binomial: 'Ursus maritimus',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1589648751789-c8ecb7a88bd5?w=900&auto=format&fit=crop&q=80',
+			text: 'polar bear on the snow, by the water, raised on the hind legs, front paws together',
+			pos: '50% 25%',
+			by: 'Hans-Jurgen Mager'
+		}
+	},
+	{
+		common: 'Giant panda',
+		binomial: 'Ailuropoda melanoleuca',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1659540181281-1d89d6112832?w=900&auto=format&fit=crop&q=80',
+			text: 'giant panda hanging from a tree branch',
+			pos: '47%',
+			by: 'Jiachen Lin'
+		}
+	},
+	{
+		common: 'Grévy\'s zebra',
+		binomial: 'Equus grevyi',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1526095179574-86e545346ae6?w=900&auto=format&fit=crop&q=80',
+			text: 'zebra standing on wheat field, looking back towards the camera',
+			pos: '65% 35%',
+			by: 'Jeff Griffith'
+		}
+	},
+	{
+		common: 'Cheetah',
+		binomial: 'Acinonyx jubatus',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1541707519942-08fd2f6480ba?w=900&auto=format&fit=crop&q=80',
+			text: 'cheetah sitting in the grass under a blue sky',
+			by: 'Mike Bird'
+		}
+	},
+	{
+		common: 'King penguin',
+		binomial: 'Aptenodytes patagonicus',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1595792419466-23cec2476fa6?w=900&auto=format&fit=crop&q=80',
+			text: 'king penguin with a fluffy brown chick on grey rocks',
+			pos: '35%',
+			by: 'Martin Wettstein'
+		}
+	},
+	{
+		common: 'Red panda',
+		binomial: 'Ailurus fulgens',
+		photo: {
+			url: 'https://images.unsplash.com/photo-1689799513565-44d2bc09d75b?w=900&auto=format&fit=crop&q=80',
+			text: 'a red panda in a tree',
+			by: 'Niels Baars'
+		}
+	},
+];
+
+const CircularGalleryDemo = () => {
+  return (
+    // This outer container provides the scrollable height
+    <div className="w-full bg-background text-foreground" style={{ height: '500vh' }}>
+      {/* This inner container sticks to the top while scrolling */}
+      <div className="w-full h-screen sticky top-0 flex flex-col items-center justify-center overflow-hidden">
+        <div className="text-center mb-8 absolute top-16 z-10">
+          <h1 className="text-4xl font-bold">Animal Gallery</h1>
+          <p className="text-muted-foreground">Scroll to rotate the gallery</p>
+        </div>
+        <div className="w-full h-full">
+          <CircularGallery items={galleryData} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CircularGalleryDemo;
+
+```
+
+For ICons code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+icons.tsx
+type IconProps = React.HTMLAttributes<SVGElement>;
+
+export const Icons = {
+  logo: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="40"
+      height="40"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M2.5 16.88a1 1 0 0 1-.32-1.43l9-13.02a1 1 0 0 1 1.64 0l9 13.01a1 1 0 0 1-.32 1.44l-8.51 4.86a2 2 0 0 1-1.98 0Z" />
+      <path d="M12 2v20" />
+    </svg>
+  ),
+  twitter: (props: IconProps) => (
+    <svg
+      {...props}
+      height="23"
+      viewBox="0 0 1200 1227"
+      width="23"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+    </svg>
+  ),
+  github: (props: IconProps) => (
+    <svg viewBox="0 0 438.549 438.549" {...props}>
+      <path
+        fill="currentColor"
+        d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"
+      ></path>
+    </svg>
+  ),
+  radix: (props: IconProps) => (
+    <svg viewBox="0 0 25 25" fill="none" {...props}>
+      <path
+        d="M12 25C7.58173 25 4 21.4183 4 17C4 12.5817 7.58173 9 12 9V25Z"
+        fill="currentcolor"
+      ></path>
+      <path d="M12 0H4V8H12V0Z" fill="currentcolor"></path>
+      <path
+        d="M17 8C19.2091 8 21 6.20914 21 4C21 1.79086 19.2091 0 17 0C14.7909 0 13 1.79086 13 4C13 6.20914 14.7909 8 17 8Z"
+        fill="currentcolor"
+      ></path>
+    </svg>
+  ),
+  aria: (props: IconProps) => (
+    <svg role="img" viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M13.966 22.624l-1.69-4.281H8.122l3.892-9.144 5.662 13.425zM8.884 1.376H0v21.248zm15.116 0h-8.884L24 22.624Z" />
+    </svg>
+  ),
+  npm: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path
+        d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  yarn: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12 0C5.375 0 0 5.375 0 12s5.375 12 12 12 12-5.375 12-12S18.625 0 12 0zm.768 4.105c.183 0 .363.053.525.157.125.083.287.185.755 1.154.31-.088.468-.042.551-.019.204.056.366.19.463.375.477.917.542 2.553.334 3.605-.241 1.232-.755 2.029-1.131 2.576.324.329.778.899 1.117 1.825.278.774.31 1.478.273 2.015a5.51 5.51 0 0 0 .602-.329c.593-.366 1.487-.917 2.553-.931.714-.009 1.269.445 1.353 1.103a1.23 1.23 0 0 1-.945 1.362c-.649.158-.95.278-1.821.843-1.232.797-2.539 1.242-3.012 1.39a1.686 1.686 0 0 1-.704.343c-.737.181-3.266.315-3.466.315h-.046c-.783 0-1.214-.241-1.45-.491-.658.329-1.51.19-2.122-.134a1.078 1.078 0 0 1-.58-1.153 1.243 1.243 0 0 1-.153-.195c-.162-.25-.528-.936-.454-1.946.056-.723.556-1.367.88-1.71a5.522 5.522 0 0 1 .408-2.256c.306-.727.885-1.348 1.32-1.737-.32-.537-.644-1.367-.329-2.21.227-.602.412-.936.82-1.08h-.005c.199-.074.389-.153.486-.259a3.418 3.418 0 0 1 2.298-1.103c.037-.093.079-.185.125-.283.31-.658.639-1.029 1.024-1.168a.94.94 0 0 1 .328-.06zm.006.7c-.507.016-1.001 1.519-1.001 1.519s-1.27-.204-2.266.871c-.199.218-.468.334-.746.44-.079.028-.176.023-.417.672-.371.991.625 2.094.625 2.094s-1.186.839-1.626 1.881c-.486 1.144-.338 2.261-.338 2.261s-.843.732-.899 1.487c-.051.663.139 1.2.343 1.515.227.343.51.176.51.176s-.561.653-.037.931c.477.25 1.283.394 1.71-.037.31-.31.371-1.001.486-1.283.028-.065.12.111.209.199.097.093.264.195.264.195s-.755.324-.445 1.066c.102.246.468.403 1.066.398.222-.005 2.664-.139 3.313-.296.375-.088.505-.283.505-.283s1.566-.431 2.998-1.357c.917-.598 1.293-.76 2.034-.936.612-.148.57-1.098-.241-1.084-.839.009-1.575.44-2.196.825-1.163.718-1.742.672-1.742.672l-.018-.032c-.079-.13.371-1.293-.134-2.678-.547-1.515-1.413-1.881-1.344-1.997.297-.5 1.038-1.297 1.334-2.78.176-.899.13-2.377-.269-3.151-.074-.144-.732.241-.732.241s-.616-1.371-.788-1.483a.271.271 0 0 0-.157-.046z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  pnpm: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path
+        d="M0 0v7.5h7.5V0zm8.25 0v7.5h7.498V0zm8.25 0v7.5H24V0zM8.25 8.25v7.5h7.498v-7.5zm8.25 0v7.5H24v-7.5zM0 16.5V24h7.5v-7.5zm8.25 0V24h7.498v-7.5zm8.25 0V24H24v-7.5z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  react: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path
+        d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  tailwind: (props: IconProps) => (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 c1.177,1.194,2.538,2.576,5.512,2.576c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  google: (props: IconProps) => (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+      <path
+        fill="currentColor"
+        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+      />
+    </svg>
+  ),
+  apple: (props: IconProps) => (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  paypal: (props: IconProps) => (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+      <path
+        d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  spinner: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+  ),
+  chevronRight: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  ),
+  book: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+    </svg>
+  ),
+  component: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M5.5 8.5 9 12l-3.5 3.5L2 12l3.5-3.5Z" />
+      <path d="m12 2 3.5 3.5L12 9 8.5 5.5 12 2Z" />
+      <path d="M18.5 8.5 22 12l-3.5 3.5L15 12l3.5-3.5Z" />
+      <path d="m12 15 3.5 3.5L12 22l-3.5-3.5L12 15Z" />
+    </svg>
+  ),
+};
+
+demo.tsx
+import { Icons } from "@/components/ui/icons";
+
+function IconsDemo() {
+  return (
+    <div className="grid grid-cols-3 gap-4 p-4 md:grid-cols-4 lg:grid-cols-6">
+      {Object.entries(Icons).map(([name, Icon]) => (
+        <div
+          key={name}
+          className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4"
+        >
+          <Icon className="h-8 w-8" />
+          <span className="text-sm text-gray-600">{name}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export { IconsDemo };
+```
+
+testimonial code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+animated-testimonials.tsx
+"use client";
+
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+
+type Testimonial = {
+  quote: string;
+  name: string;
+  designation: string;
+  src: string;
+};
+
+export const AnimatedTestimonials = ({
+  testimonials,
+  autoplay = false,
+  className,
+}: {
+  testimonials: Testimonial[];
+  autoplay?: boolean;
+  className?: string;
+}) => {
+  const [active, setActive] = useState(0);
+
+  const handleNext = () => {
+    setActive((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const handlePrev = () => {
+    setActive((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const isActive = (index: number) => {
+    return index === active;
+  };
+
+  useEffect(() => {
+    if (autoplay) {
+      const interval = setInterval(handleNext, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [autoplay]);
+
+  const randomRotateY = () => {
+    return Math.floor(Math.random() * 21) - 10;
+  };
+
+  return (
+    <div className={cn("max-w-sm md:max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-20", className)}>
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-20">
+        <div>
+          <div className="relative h-80 w-full">
+            <AnimatePresence>
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.src}
+                  initial={{
+                    opacity: 0,
+                    scale: 0.9,
+                    z: -100,
+                    rotate: randomRotateY(),
+                  }}
+                  animate={{
+                    opacity: isActive(index) ? 1 : 0.7,
+                    scale: isActive(index) ? 1 : 0.95,
+                    z: isActive(index) ? 0 : -100,
+                    rotate: isActive(index) ? 0 : randomRotateY(),
+                    zIndex: isActive(index)
+                      ? 999
+                      : testimonials.length + 2 - index,
+                    y: isActive(index) ? [0, -80, 0] : 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.9,
+                    z: 100,
+                    rotate: randomRotateY(),
+                  }}
+                  transition={{
+                    duration: 0.4,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute inset-0 origin-bottom"
+                >
+                  <Image
+                    src={testimonial.src}
+                    alt={testimonial.name}
+                    width={500}
+                    height={500}
+                    draggable={false}
+                    className="h-full w-full rounded-3xl object-cover object-center"
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+        <div className="flex justify-between flex-col py-4">
+          <motion.div
+            key={active}
+            initial={{
+              y: 20,
+              opacity: 0,
+            }}
+            animate={{
+              y: 0,
+              opacity: 1,
+            }}
+            exit={{
+              y: -20,
+              opacity: 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
+          >
+            <h3 className="text-2xl font-bold text-foreground">
+              {testimonials[active].name}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {testimonials[active].designation}
+            </p>
+            <motion.p className="text-lg text-muted-foreground mt-8">
+              {testimonials[active].quote.split(" ").map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{
+                    filter: "blur(10px)",
+                    opacity: 0,
+                    y: 5,
+                  }}
+                  animate={{
+                    filter: "blur(0px)",
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                    ease: "easeInOut",
+                    delay: 0.02 * index,
+                  }}
+                  className="inline-block"
+                >
+                  {word}&nbsp;
+                </motion.span>
+              ))}
+            </motion.p>
+          </motion.div>
+          <div className="flex gap-4 pt-12 md:pt-0">
+            <button
+              onClick={handlePrev}
+              className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center group/button"
+            >
+              <IconArrowLeft className="h-5 w-5 text-foreground group-hover/button:rotate-12 transition-transform duration-300" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center group/button"
+            >
+              <IconArrowRight className="h-5 w-5 text-foreground group-hover/button:-rotate-12 transition-transform duration-300" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+demo.tsx
+import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
+
+function AnimatedTestimonialsDemo() {
+  const testimonials = [
+    {
+      quote:
+        "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
+      name: "Sarah Chen",
+      designation: "Product Manager at TechFlow",
+      src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
+      name: "Michael Rodriguez",
+      designation: "CTO at InnovateSphere",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
+      name: "Emily Watson",
+      designation: "Operations Director at CloudScale",
+      src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
+      name: "James Kim",
+      designation: "Engineering Lead at DataPro",
+      src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
+      name: "Lisa Thompson",
+      designation: "VP of Technology at FutureNet",
+      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+  ];
+  return <AnimatedTestimonials testimonials={testimonials} />;
+}
+
+export { AnimatedTestimonialsDemo };
+
+```
+
+Install NPM dependencies:
+```bash
+framer-motion, @tabler/icons-react
+```
+button code promt:
+You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles. 
+If default path for components is not /components/ui, provide instructions on why it's important to create this folder
+Copy-paste this component to /components/ui folder:
+```tsx
+rainbow-button.tsx
+import React from "react";
+
+import { cn } from "@/lib/utils";
+interface RainbowButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+
+export function RainbowButton({
+  children,
+  className,
+  ...props
+}: RainbowButtonProps) {
+  return (
+    <button
+      className={cn(
+        "group relative inline-flex h-11 animate-rainbow cursor-pointer items-center justify-center rounded-xl border-0 bg-[length:200%] px-8 py-2 font-medium text-primary-foreground transition-colors [background-clip:padding-box,border-box,border-box] [background-origin:border-box] [border:calc(0.08*1rem)_solid_transparent] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+
+        // before styles
+        "before:absolute before:bottom-[-20%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))]",
+
+        // light mode colors
+        "bg-[linear-gradient(#121213,#121213),linear-gradient(#121213_50%,rgba(18,18,19,0.6)_80%,rgba(18,18,19,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
+
+        // dark mode colors
+        "dark:bg-[linear-gradient(#fff,#fff),linear-gradient(#fff_50%,rgba(255,255,255,0.6)_80%,rgba(0,0,0,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
+
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+demo.tsx
+import { RainbowButton } from "@/components/ui/rainbow-button"
+
+export function RainbowButtonDemo() {
+  return <RainbowButton>Get Unlimited Access</RainbowButton>;
+}
+
+```
+
+Extend existing tailwind.config.js with this code:
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        "color-1": "hsl(var(--color-1))",
+        "color-2": "hsl(var(--color-2))",
+        "color-3": "hsl(var(--color-3))",
+        "color-4": "hsl(var(--color-4))",
+        "color-5": "hsl(var(--color-5))",
+      },
+      animation: {
+        rainbow: "rainbow var(--speed, 2s) infinite linear",
+      },
+      keyframes: {
+        rainbow: {
+          "0%": { "background-position": "0%" },
+          "100%": { "background-position": "200%" },
+        },
+      },
+    },
+  },
+};
+
+```
+
+Extend existing globals.css with this code:
+```css
+:root {
+  --color-1: 0 100% 63%;
+  --color-2: 270 100% 63%;
+  --color-3: 210 100% 63%;
+  --color-4: 195 100% 63%;
+  --color-5: 90 100% 63%;
+}
+```
+

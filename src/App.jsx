@@ -1,20 +1,25 @@
 import { useState } from 'react'
-import './App.css'
-// import { Button } from 'antd'
-import { Button } from "@/components/ui/button"
+import { SparklesPreviewColorful ,SparklesPreview} from './pages/Home/HeroSection'
+import { FeaturesSection } from './pages/Home/FeatureSection'
+import { OrbitTimeline } from './pages/Home/OrbitTimeLine'
+import GallerySection from './pages/Home/GallerySection'
+import { TestimonialSection } from './pages/Home/TestimonialSection'
+import { Docks } from './pages/Home/Docks'
+import { Footer } from './pages/Home/Footer'
+
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-   <div className="p-6 space-y-4">
-      <Button type="primary">Ant Design Button</Button>
-      <button className="btn btn-secondary text-2xl">DaisyUI Button</button>
-      <p className="text-xl font-bold text-blue-600">Tailwind Text</p>
-      <button className="btn btn-neutral">Neutral</button>
-      <div className="p-6 space-y-4">
-      <Button>ShadCN Button</Button>
-    </div>
+   <div className="min-h-screen relative">
+    <SparklesPreviewColorful />
+    <FeaturesSection/>
+    {/* <OrbitTimeline /> */}
+    {/* <GallerySection/> */}
+    <TestimonialSection />
+    <Footer />
+    <Docks />
     </div>
   )
 }
