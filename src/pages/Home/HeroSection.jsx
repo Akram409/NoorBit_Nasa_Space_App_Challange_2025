@@ -56,36 +56,66 @@ export function SparklesPreviewDark() {
 
 export function SparklesPreviewColorful() {
   return (
-    <div className="h-[100vh] relative w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+    <div className="h-[100vh] relative w-full bg-white dark:bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+      {/* Particle Background */}
       <div className="w-full absolute inset-0 h-screen">
+        {/* Light mode particles */}
         <SparklesCore
-          id="tsparticlescolorful"
+          id="tsparticles-light"
           background="transparent"
           minSize={0.6}
           maxSize={1.4}
           particleDensity={100}
-          className="w-full h-full"
-          particleColor="#00ff00"
+          className="w-full h-full dark:hidden"  // hidden in dark mode
+          particleColor="#0066ff"
+          speed={0.5}
+        />
+        {/* Dark mode particles */}
+        <SparklesCore
+          id="tsparticles-dark"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={100}
+          className="w-full h-full hidden dark:block"  // only visible in dark mode
+          particleColor="#00ffcc"
           speed={0.5}
         />
       </div>
 
+      {/* Foreground Text */}
       <div className="flex flex-col items-center justify-center z-20">
-        <h1 className="md:text-6xl text-4xl lg:text-8xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+        <h1
+          className="
+            md:text-6xl text-4xl lg:text-8xl font-extrabold text-center
+            bg-clip-text text-transparent 
+            bg-gradient-to-b from-black to-neutral-600
+            dark:from-neutral-50 dark:to-neutral-400
+          "
+        >
           Innovating for Sustainability
         </h1>
+
         <div className="h-[200px] flex items-center justify-center">
           <GooeyText
             texts={["Resilience", "Green", "Action", "Sustainability"]}
             morphTime={1}
             cooldownTime={0.25}
-            className="md:text-6xl text-3xl lg:text-8xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400"
+            className="
+              md:text-6xl text-3xl lg:text-8xl font-bold text-center
+              bg-clip-text text-transparent
+              bg-gradient-to-b from-black to-neutral-600
+              dark:from-neutral-50 dark:to-neutral-400
+            "
           />
         </div>
-        <p className="text-neutral-300 cursor-default text-center text-xl lg:text-2xl mt-4">
+
+        <p className="cursor-default text-center text-xl lg:text-2xl mt-4 text-neutral-700 dark:text-neutral-300">
           Building a better tomorrow, today.
         </p>
       </div>
     </div>
   );
 }
+
+

@@ -6,6 +6,7 @@ import GallerySection from './pages/Home/GallerySection'
 import { TestimonialSection } from './pages/Home/TestimonialSection'
 import { Docks } from './pages/Home/Docks'
 import { Footer } from './pages/Home/Footer'
+import { DocksSection } from './pages/Home/DocksSection'
 
 
 function App() {
@@ -13,13 +14,15 @@ function App() {
 
   return (
    <div className="min-h-screen relative">
+     <DocksSection />
     <SparklesPreviewColorful />
+    
     <FeaturesSection/>
     {/* <OrbitTimeline /> */}
     {/* <GallerySection/> */}
     <TestimonialSection />
     <Footer />
-    <Docks />
+   
     </div>
   )
 }
