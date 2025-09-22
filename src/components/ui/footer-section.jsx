@@ -1,170 +1,105 @@
 "use client";
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Sun, Moon, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 function FooterSection() {
-  const [isDarkMode, setIsDarkMode] = React.useState(true)
-  const [isChatOpen, setIsChatOpen] = React.useState(false)
+  const [isDarkMode, setIsDarkMode] = React.useState(true);
 
   React.useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add("dark")
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark")
+      document.documentElement.classList.remove("dark");
     }
-  }, [isDarkMode])
+  }, [isDarkMode]);
 
   return (
-    <footer
-      className="relative border-t bg-background text-foreground transition-colors duration-300">
-      <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          <div className="relative">
-            <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
-            <p className="mb-6 text-muted-foreground">
-              Join our newsletter for the latest updates and exclusive offers.
-            </p>
-            <form className="relative">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="pr-12 backdrop-blur-sm" />
-              <Button
-                type="submit"
-                size="icon"
-                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105">
-                <Send className="h-4 w-4" />
-                <span className="sr-only">Subscribe</span>
-              </Button>
-            </form>
-            <div
-              className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-            <nav className="space-y-2 text-sm">
-              <a href="#" className="block transition-colors hover:text-primary">
-                Home
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                About Us
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                Services
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                Products
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                Contact
-              </a>
-            </nav>
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
-            <address className="space-y-2 text-sm not-italic">
-              <p>123 Innovation Street</p>
-              <p>Tech City, TC 12345</p>
-              <p>Phone: (123) 456-7890</p>
-              <p>Email: hello@example.com</p>
-            </address>
-          </div>
-          <div className="relative">
-            <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
-            <div className="mb-6 flex space-x-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
-                      <Facebook className="h-4 w-4" />
-                      <span className="sr-only">Facebook</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Facebook</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
-                      <Twitter className="h-4 w-4" />
-                      <span className="sr-only">Twitter</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Twitter</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
-                      <Instagram className="h-4 w-4" />
-                      <span className="sr-only">Instagram</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Instagram</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
-                      <Linkedin className="h-4 w-4" />
-                      <span className="sr-only">LinkedIn</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Connect with us on LinkedIn</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Sun className="h-4 w-4" />
-              <Switch id="dark-mode" checked={isDarkMode} onCheckedChange={setIsDarkMode} />
-              <Moon className="h-4 w-4" />
-              <Label htmlFor="dark-mode" className="sr-only">
-                Toggle dark mode
-              </Label>
-            </div>
-          </div>
-        </div>
-        <div
-          className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            © 2024 Your Company. All rights reserved.
+    <footer className="bg-white dark:bg-black text-black dark:text-white border-t border-black/10 dark:border-white/20 transition-colors duration-300">
+      <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Project Info */}
+        <div className="text-center md:text-left">
+          <h2 className="text-xl font-bold">NASA Space Apps 2025</h2>
+          <p className="text-sm text-gray-700 dark:text-gray-400">
+            Project: Pathways to Healthy Cities and Human Settlements
           </p>
-          <nav className="flex gap-4 text-sm">
-            <a href="#" className="transition-colors hover:text-primary">
-              Privacy Policy
-            </a>
-            <a href="#" className="transition-colors hover:text-primary">
-              Terms of Service
-            </a>
-            <a href="#" className="transition-colors hover:text-primary">
-              Cookie Settings
-            </a>
-          </nav>
+        </div>
+
+        {/* Quick Links */}
+        <nav className="flex gap-4 text-sm">
+          <a
+            href="#hero-section"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
+            Home
+          </a>
+          <a
+            href="#features-section"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
+            Features
+          </a>
+          <a
+            href="#contact-section"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
+            Contact
+          </a>
+        </nav>
+
+        {/* Social + Dark Mode Toggle */}
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full text-black dark:text-white border-black/20 dark:border-white/30"
+            >
+              <Facebook className="h-4 w-4" />
+              <span className="sr-only">Facebook</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full text-black dark:text-white border-black/20 dark:border-white/30"
+            >
+              <Twitter className="h-4 w-4" />
+              <span className="sr-only">Twitter</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full text-black dark:text-white border-black/20 dark:border-white/30"
+            >
+              <Instagram className="h-4 w-4" />
+              <span className="sr-only">Instagram</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full text-black dark:text-white border-black/20 dark:border-white/30"
+            >
+              <Linkedin className="h-4 w-4" />
+              <span className="sr-only">LinkedIn</span>
+            </Button>
+          </div>
+
+          {/* Dark Mode Toggle */}
+          <div className="flex items-center gap-1 ml-4">
+            <Sun className="h-5 w-5 text-yellow-500 dark:text-yellow-400" aria-hidden="true" />
+            <Switch
+              id="dark-mode"
+              checked={isDarkMode}
+              onCheckedChange={setIsDarkMode}
+              aria-label="Toggle dark mode"
+            />
+            <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+          </div>
         </div>
       </div>
     </footer>
   );
 }
 
-export { FooterSection }
+export { FooterSection };

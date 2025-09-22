@@ -1,69 +1,57 @@
-
-import { Calendar, Code, FileText, User, Clock } from "lucide-react";
+import { CustomText } from "@/components/customText";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
+import { Thermometer, Droplets, Trees, BarChart3, Shield } from "lucide-react";
 
 const timelineData = [
   {
     id: 1,
-    title: "Planning",
-    date: "Jan 2024",
-    content: "Project planning and requirements gathering phase.",
-    category: "Planning",
-    icon: Calendar,
-    relatedIds: [2],
-    status: "completed" ,
-    energy: 100,
+    title: "Challenge Description",
+    content: `The 2025 NASA Space Apps Challenge focuses on using NASA Earth observation data to support urban planning strategies that balance human well-being and environmental sustainability.`,
+    relatedIds: [2, 3],
+    icon: Thermometer,
   },
   {
     id: 2,
-    title: "Design",
-    date: "Feb 2024",
-    content: "UI/UX design and system architecture.",
-    category: "Design",
-    icon: FileText,
-    relatedIds: [1, 3],
-    status: "completed" ,
-    energy: 90,
+    title: "Problem Identification",
+    content: `Climate change and rapid urbanization pose new challenges for urban areas worldwide, including air pollution, water scarcity, loss of green spaces, and extreme weather events.`,
+    relatedIds: [1, 4],
+    icon: Droplets,
   },
   {
     id: 3,
-    title: "Development",
-    date: "Mar 2024",
-    content: "Core features implementation and testing.",
-    category: "Development",
-    icon: Code,
-    relatedIds: [2, 4],
-    status: "in-progress" ,
-    energy: 60,
+    title: "Problems and Solutions",
+    content: `Key problems include pollution, lack of green spaces, extreme weather, rapid urbanization, healthcare access, water/waste management, and energy access. Solutions leverage satellite data for monitoring and planning.`,
+    relatedIds: [1, 5],
+    icon: Trees,
   },
   {
     id: 4,
-    title: "Testing",
-    date: "Apr 2024",
-    content: "User testing and bug fixes.",
-    category: "Testing",
-    icon: User,
-    relatedIds: [3, 5],
-    status: "pending" ,
-    energy: 30,
+    title: "Data and Tools",
+    content: `NASA Earthdata Worldview, Earth Observatory, SEDAC, Copernicus GHSL, and WorldPop provide satellite imagery and socio-environmental data to inform urban planning and sustainability efforts.`,
+    relatedIds: [2, 5],
+    icon: BarChart3,
   },
   {
     id: 5,
-    title: "Release",
-    date: "May 2024",
-    content: "Final deployment and release.",
-    category: "Release",
-    icon: Clock,
-    relatedIds: [4],
-    status: "pending" ,
-    energy: 10,
+    title: "Conclusion",
+    content: `By utilizing NASA's Earth observation data and partner resources, urban planners can create data-driven solutions to improve quality of life and ensure long-term sustainability in cities facing climate change.`,
+    relatedIds: [3, 4],
+    icon: Shield,
   },
 ];
 
 export function OrbitTimeline() {
   return (
     <>
-      <RadialOrbitalTimeline timelineData={timelineData} />
+      <div className="">
+        {/* Header Section */}
+        <div className="text-center">
+          <CustomText name="Orbit of Innovation" />
+        </div>
+
+        <RadialOrbitalTimeline timelineData={timelineData} />
+
+      </div>
     </>
   );
 }

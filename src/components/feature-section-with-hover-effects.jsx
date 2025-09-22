@@ -101,7 +101,7 @@ export function FeaturesSectionWithHoverEffects() {
 
   return (
     <section
-      className="py-20 px-4 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-black dark:to-black"
+      className="py-20 px-4  dark:from-black dark:to-black"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
@@ -120,7 +120,7 @@ export function FeaturesSectionWithHoverEffects() {
         <div className="text-center mt-10">
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white dark:bg-black rounded-2xl px-8 py-6 shadow-lg border border-gray-200 dark:border-slate-600 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center animate-spin-slow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r flex items-center justify-center animate-spin-slow">
                 <Leaf className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">

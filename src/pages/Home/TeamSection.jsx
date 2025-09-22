@@ -78,7 +78,7 @@ function TeamSection() {
   //   ];
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-black dark:to-black">
+    <div className="bg-gradient-to-br dark:from-black dark:to-black mb-20">
       {/* Header Section */}
       <div className="text-center">
         <CustomText name="Our Team" />

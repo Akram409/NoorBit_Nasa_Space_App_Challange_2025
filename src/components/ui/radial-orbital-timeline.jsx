@@ -1,22 +1,12 @@
-"use client";;
+"use client";
 import { useState, useEffect, useRef } from "react";
-import { ArrowRight, Link, Zap } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function RadialOrbitalTimeline({
-  timelineData
-}) {
+export default function RadialOrbitalTimeline({ timelineData }) {
   const [expandedItems, setExpandedItems] = useState({});
-  const [viewMode, setViewMode] = useState("orbital");
   const [rotationAngle, setRotationAngle] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
   const [pulseEffect, setPulseEffect] = useState({});
-  const [centerOffset, setCenterOffset] = useState({
-    x: 0,
-    y: 0,
-  });
   const [activeNodeId, setActiveNodeId] = useState(null);
   const containerRef = useRef(null);
   const orbitRef = useRef(null);
@@ -34,6 +24,7 @@ export default function RadialOrbitalTimeline({
   const toggleItem = (id) => {
     setExpandedItems((prev) => {
       const newState = { ...prev };
+
       Object.keys(newState).forEach((key) => {
         if (parseInt(key) !== id) {
           newState[parseInt(key)] = false;
@@ -67,7 +58,7 @@ export default function RadialOrbitalTimeline({
   useEffect(() => {
     let rotationTimer;
 
-    if (autoRotate && viewMode === "orbital") {
+    if (autoRotate) {
       rotationTimer = setInterval(() => {
         setRotationAngle((prev) => {
           const newAngle = (prev + 0.3) % 360;
@@ -77,14 +68,12 @@ export default function RadialOrbitalTimeline({
     }
 
     return () => {
-      if (rotationTimer) {
-        clearInterval(rotationTimer);
-      }
+      if (rotationTimer) clearInterval(rotationTimer);
     };
-  }, [autoRotate, viewMode]);
+  }, [autoRotate]);
 
   const centerViewOnNode = (nodeId) => {
-    if (viewMode !== "orbital" || !nodeRefs.current[nodeId]) return;
+    if (!nodeRefs.current[nodeId]) return;
 
     const nodeIndex = timelineData.findIndex((item) => item.id === nodeId);
     const totalNodes = timelineData.length;
@@ -98,65 +87,82 @@ export default function RadialOrbitalTimeline({
     const radius = 200;
     const radian = (angle * Math.PI) / 180;
 
-    const x = radius * Math.cos(radian) + centerOffset.x;
-    const y = radius * Math.sin(radian) + centerOffset.y;
+    const x = radius * Math.cos(radian);
+    const y = radius * Math.sin(radian);
 
     const zIndex = Math.round(100 + 50 * Math.cos(radian));
-    const opacity = Math.max(0.4, Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2)));
+    const opacity = Math.max(
+      0.4,
+      Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2))
+    );
 
     return { x, y, angle, zIndex, opacity };
   };
 
-  const getRelatedItems = itemId => {
+  const getRelatedItems = (itemId) => {
     const currentItem = timelineData.find((item) => item.id === itemId);
     return currentItem ? currentItem.relatedIds : [];
   };
 
-  const isRelatedToActive = itemId => {
+  const isRelatedToActive = (itemId) => {
     if (!activeNodeId) return false;
     const relatedItems = getRelatedItems(activeNodeId);
     return relatedItems.includes(itemId);
   };
 
-  const getStatusStyles = status => {
-    switch (status) {
-      case "completed":
-        return "text-white bg-black border-white";
-      case "in-progress":
-        return "text-black bg-white border-black";
-      case "pending":
-        return "text-white bg-black/40 border-white/50";
-      default:
-        return "text-white bg-black/40 border-white/50";
-    }
-  };
-
   return (
     <div
-      className="w-full h-screen flex flex-col items-center justify-center bg-black overflow-hidden"
+      className="w-full h-screen flex flex-col items-center justify-center
+                 bg-white text-black dark:bg-black dark:text-white
+                 overflow-auto select-none transition-colors duration-500"
       ref={containerRef}
-      onClick={handleContainerClick}>
-      <div
-        className="relative w-full max-w-4xl h-full flex items-center justify-center">
+      onClick={handleContainerClick}
+      aria-label="Radial orbital timeline of project sections"
+      role="region"
+    >
+      <div className="relative w-full max-w-5xl h-full flex items-center justify-center">
         <div
           className="absolute w-full h-full flex items-center justify-center"
           ref={orbitRef}
           style={{
             perspective: "1000px",
-            transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)`,
-          }}>
+            transform: `translate(0px, 0px)`,
+          }}
+        >
+          {/* Central NASA Icon */}
           <div
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500 animate-pulse flex items-center justify-center z-10">
+            className="absolute w-28 h-28 rounded-full animate-pulse flex items-center justify-center z-10 cursor-default"
+            aria-hidden="true"
+          >
+            <div className="absolute w-24 h-24 rounded-full border border-black dark:border-white animate-ping opacity-70"></div>
             <div
-              className="absolute w-20 h-20 rounded-full border border-white/20 animate-ping opacity-70"></div>
-            <div
-              className="absolute w-24 h-24 rounded-full border border-white/10 animate-ping opacity-50"
-              style={{ animationDelay: "0.5s" }}></div>
-            <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md"></div>
+              className="absolute w-24 h-24 rounded-full border border-black/80 dark:border-white/80 animate-ping opacity-50"
+              style={{ animationDelay: "0.5s" }}
+            ></div>
+
+            {/* Black icon for light mode */}
+            <img
+              src="./src/assets/nasa-black-icon.png"
+              alt="NASA Logo Black"
+              className="object-contain block dark:hidden"
+              draggable={false}
+            />
+            {/* White icon for dark mode */}
+            <img
+              src="./src/assets/nasa-white-icon.png"
+              alt="NASA Logo White"
+              className="object-contain hidden dark:block"
+              draggable={false}
+            />
           </div>
 
-          <div className="absolute w-96 h-96 rounded-full border border-white/10"></div>
+          {/* Orbit ring */}
+          <div
+            className="absolute w-96 h-96 rounded-full border border-black/70 dark:border-white/70"
+            aria-hidden="true"
+          ></div>
 
+          {/* Orbiting nodes */}
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
             const isExpanded = expandedItems[item.id];
@@ -179,121 +185,101 @@ export default function RadialOrbitalTimeline({
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleItem(item.id);
-                }}>
+                }}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Project section: ${item.title}`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleItem(item.id);
+                  }
+                }}
+              >
+                {/* Pulsing halo */}
                 <div
                   className={`absolute rounded-full -inset-1 ${
                     isPulsing ? "animate-pulse duration-1000" : ""
                   }`}
                   style={{
-                    background: `radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)`,
-                    width: `${item.energy * 0.5 + 40}px`,
-                    height: `${item.energy * 0.5 + 40}px`,
-                    left: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
-                    top: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
-                  }}></div>
+                    background: `radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 70%)`,
+                    width: "56px",
+                    height: "56px",
+                    left: "-8px",
+                    top: "-8px",
+                  }}
+                ></div>
+
+                {/* Node circle with icon */}
                 <div
                   className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
-                  ${
-                    isExpanded
-                      ? "bg-white text-black"
-                      : isRelated
-                      ? "bg-white/50 text-black"
-                      : "bg-black text-white"
-                  }
-                  border-2 
-                  ${
-                    isExpanded
-                      ? "border-white shadow-lg shadow-white/30"
-                      : isRelated
-                      ? "border-white animate-pulse"
-                      : "border-white/40"
-                  }
-                  transition-all duration-300 transform
-                  ${isExpanded ? "scale-150" : ""}
-                `}>
-                  <Icon size={16} />
+                    w-18 h-18 rounded-full flex items-center justify-center
+                    ${
+                      isExpanded
+                        ? "bg-white text-black"
+                        : isRelated
+                        ? "bg-white/50 text-black"
+                        : "bg-white dark:bg-black text-black dark:text-white"
+                    }
+                    border-2 
+                    ${
+                      isExpanded
+                        ? "border-black dark:border-white shadow-lg shadow-black/30 dark:shadow-white/30"
+                        : isRelated
+                        ? "border-black dark:border-white animate-pulse"
+                        : "border-black/40 dark:border-white/40"
+                    }
+                    transition-all duration-300 transform
+                    ${isExpanded ? "scale-125" : ""}
+                  `}
+                >
+                  <Icon size={28} aria-hidden="true" />
                 </div>
+
+                {/* Node title */}
                 <div
                   className={`
-                  absolute top-12  whitespace-nowrap
-                  text-xs font-semibold tracking-wider
-                  transition-all duration-300
-                  ${isExpanded ? "text-white scale-125" : "text-white/70"}
-                `}>
-                  {item.title}
+                    absolute top-18 whitespace-nowrap
+                    text-xs font-semibold tracking-wider
+                    transition-all duration-300
+                    ${
+                      isExpanded
+                        ? "text-black dark:text-white scale-110"
+                        : "text-black/90 dark:text-white/90"
+                    }
+                  `}
+                >
+                  <span className={`${isExpanded ? "hidden" : "visible"}`}>
+                    {item.title}
+                  </span>
                 </div>
+
+                {/* Expanded card with detailed textual content */}
                 {isExpanded && (
-                  <Card
-                    className="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/90 backdrop-blur-lg border-white/30 shadow-xl shadow-white/10 overflow-visible">
+                  <div className="absolute top-20 left-1/2 -translate-x-1/2 w-80 max-w-xs z-30">
+                    {/* Gradient border layer */}
                     <div
-                      className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <Badge className={`px-2 text-xs ${getStatusStyles(item.status)}`}>
-                          {item.status === "completed"
-                            ? "COMPLETE"
-                            : item.status === "in-progress"
-                            ? "IN PROGRESS"
-                            : "PENDING"}
-                        </Badge>
-                        <span className="text-xs font-mono text-white/50">
-                          {item.date}
-                        </span>
-                      </div>
-                      <CardTitle className="text-sm mt-2">
-                        {item.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-xs text-white/80">
-                      <p>{item.content}</p>
+                      className="absolute -inset-0.5 rounded-lg animate-spin-slow"
+                      style={{
+                        background: "conic-gradient(#3b82f6, #22c55e, #3b82f6)", // blue-green gradient
+                        zIndex: 0,
+                      }}
+                    ></div>
 
-                      <div className="mt-4 pt-3 border-t border-white/10">
-                        <div className="flex justify-between items-center text-xs mb-1">
-                          <span className="flex items-center">
-                            <Zap size={10} className="mr-1" />
-                            Energy Level
-                          </span>
-                          <span className="font-mono">{item.energy}%</span>
-                        </div>
-                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                            style={{ width: `${item.energy}%` }}></div>
-                        </div>
-                      </div>
-
-                      {item.relatedIds.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-white/10">
-                          <div className="flex items-center mb-2">
-                            <Link size={10} className="text-white/70 mr-1" />
-                            <h4 className="text-xs uppercase tracking-wider font-medium text-white/70">
-                              Connected Nodes
-                            </h4>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {item.relatedIds.map((relatedId) => {
-                              const relatedItem = timelineData.find((i) => i.id === relatedId);
-                              return (
-                                <Button
-                                  key={relatedId}
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center h-6 px-2 py-0 text-xs rounded-none border-white/20 bg-transparent hover:bg-white/10 text-white/80 hover:text-white transition-all"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleItem(relatedId);
-                                  }}>
-                                  {relatedItem?.title}
-                                  <ArrowRight size={8} className="ml-1 text-white/60" />
-                                </Button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                    {/* Card content */}
+                    <Card className="relative w-full bg-white dark:bg-black/90 backdrop-blur-lg rounded-lg overflow-auto max-h-[300px] shadow-xl shadow-black/10 dark:shadow-white/10 z-10 transition-colors duration-500">
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-black/50 dark:bg-white/50"></div>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm mt-2 text-black dark:text-white">
+                          {item.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-sm text-black/80 dark:text-white/80 whitespace-pre-line">
+                        {item.content}
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
               </div>
             );

@@ -7,6 +7,8 @@ import {
   MessageSquareText,
   Info,
   LayoutDashboard,
+  OrbitIcon,
+  Satellite,
 } from "lucide-react";
 
 const scrollToSection = (id) => {
@@ -31,6 +33,13 @@ const customNavItems = [
     label: "Features",
     onClick: () => scrollToSection("features-section"),
   },
+   {
+    id: "orbit-timeline",          
+    sectionId: "orbit-timeline-section",
+    icon: <OrbitIcon />,     
+    label: "Orbit Timeline",
+    onClick: () => scrollToSection("orbit-timeline-section"),
+  },
   {
     id: "testimonials",
     sectionId: "testimonial-section",
@@ -41,7 +50,7 @@ const customNavItems = [
   {
     id: "dashboard",
     sectionId: "dashboard-section",
-    icon: <LayoutDashboard />,
+    icon: <Satellite />,
     label: "Dashboard",
     onClick: () => scrollToSection("dashboard-section"),
   },
@@ -54,7 +63,7 @@ export function DocksSection() {
     const observerOptions = {
       root: null,
       rootMargin: "-15% 0px -60% 0px",
-      threshold: [0.1, 0.5],
+      threshold: [0.1, 0.5, 0.9],
     };
 
     const observerCallback = (entries) => {
@@ -88,10 +97,13 @@ export function DocksSection() {
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [customNavItems]);
 
-  const handleTabChange = (index) => {
+const handleTabChange = (index) => {
     setActiveIndex(index);
+    // The onClick in customNavItems already handles scrolling,
+    // but if you want to ensure it, you can call it here too.
+    // customNavItems[index].onClick();
   };
 
   return (

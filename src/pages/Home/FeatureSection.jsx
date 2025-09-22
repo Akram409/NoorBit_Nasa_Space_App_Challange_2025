@@ -3,7 +3,7 @@ import {  FeaturesSectionWithHoverEffects } from "@/components/feature-section-w
 
 function FeaturesSection() {
   return (
-    <div className=" w-full">
+    <div className=" w-full mb-14">
       <FeaturesSectionWithHoverEffects />
     </div>
   );
