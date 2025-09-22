@@ -142,14 +142,14 @@ export default function RadialOrbitalTimeline({ timelineData }) {
 
             {/* Black icon for light mode */}
             <img
-              src="public/assets/nasa-black-icon.png"
+              src="https://raw.githubusercontent.com/Akram409/NoorBit_Nasa_Space_App_Challange_2025/refs/heads/main/public/nasa-black-icon.png"
               alt="NASA Logo Black"
               className="object-contain block dark:hidden"
               draggable={false}
             />
             {/* White icon for dark mode */}
             <img
-              src="public/assets/nasa-white-icon.png"
+              src="https://raw.githubusercontent.com/Akram409/NoorBit_Nasa_Space_App_Challange_2025/refs/heads/main/public/nasa-white-icon.png"
               alt="NASA Logo White"
               className="object-contain hidden dark:block"
               draggable={false}
