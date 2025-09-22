@@ -1,44 +1,92 @@
-import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
+import { CustomText } from "@/components/customText";
+import { AnimatedTeamCard } from "@/components/ui/animated-testimonials";
 
-function TestimonialSection() {
-  const testimonials = [
+function TeamSection() {
+  const team = [
     {
       quote:
-        "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
-      name: "Sarah Chen",
-      designation: "Product Manager at TechFlow",
-      src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "As a developer, I believe in writing clean code that not only works but lasts. Solving problems through logic is what keeps me motivated.",
+      name: "Akram Hosen",
+      designation: "Developer",
+      src: "https://iili.io/Ka71PiF.jpg",
     },
     {
       quote:
-        "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
-      name: "Michael Rodriguez",
-      designation: "CTO at InnovateSphere",
-      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Design is not just about how it looks, but how it feels. As a designer and leader, I try to bring simplicity, clarity, and empathy into every project.",
+      name: "Amad Uddin Osama",
+      designation: "UI/UX Designer, Leader",
+      src: "https://iili.io/Ka714oP.png",
     },
     {
       quote:
-        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
-      name: "Emily Watson",
-      designation: "Operations Director at CloudScale",
-      src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Every frame tells a story. My passion is transforming ideas into visuals that connect with people emotionally and creatively.",
+      name: "Mahmudul Hasan Jobaier",
+      designation: "Video Editor, Script Writer",
+      src: "https://iili.io/Ka718Hx.jpg",
     },
     {
       quote:
-        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
-      name: "James Kim",
-      designation: "Engineering Lead at DataPro",
-      src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Data always has a story to tell. My role is to uncover insights and patterns that help us make smarter decisions.",
+      name: "Iftehad Kamal Iftee",
+      designation: "Data Analyst",
+      src: "https://iili.io/Ka71SAQ.jpg",
     },
     {
       quote:
-        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
-      name: "Lisa Thompson",
-      designation: "VP of Technology at FutureNet",
-      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Research is about curiosity and persistence. I believe in asking the right questions and finding answers that create real impact.",
+      name: "Shahriar Alam",
+      designation: "Researcher",
+      src: "https://iili.io/Ka71gDB.jpg",
     },
   ];
-  return <AnimatedTestimonials testimonials={testimonials} />;
+  // const team = [
+  //     {
+  //       quote:
+  //         "As a developer, I believe in writing clean code that not only works but lasts. Solving problems through logic is what keeps me motivated.",
+  //       name: "Akram Hosen",
+  //       designation: "Developer",
+  //       src: "https://i.ibb.co.com/fzLnwZnD/IMG-0429.jpg",
+  //     },
+  //     {
+  //       quote:
+  //         "Design is not just about how it looks, but how it feels. As a designer and leader, I try to bring simplicity, clarity, and empathy into every project.",
+  //       name: "Amad Uddin Osama",
+  //       designation: "UI/UX Designer, Leader",
+  //       src: "https://i.ibb.co.com/2Y51SqVX/amad.png",
+  //     },
+  //     {
+  //       quote:
+  //         "Every frame tells a story. My passion is transforming ideas into visuals that connect with people emotionally and creatively.",
+  //       name: "Mahmudul Hasan Jobaier",
+  //       designation: "Video Editor, Script Writer",
+  //       src: "https://i.ibb.co.com/yH8PNZB/6233374195639765511.jpg",
+  //     },
+  //     {
+  //       quote:
+  //         "Data always has a story to tell. My role is to uncover insights and patterns that help us make smarter decisions.",
+  //       name: "Iftehad Kamal Iftee",
+  //       designation: "Data Analyst",
+  //       src: "https://i.ibb.co.com/twfrQ8q1/6152160281082582090.jpg",
+  //     },
+  //     {
+  //       quote:
+  //         "Research is about curiosity and persistence. I believe in asking the right questions and finding answers that create real impact.",
+  //       name: "Shahriar Alam",
+  //       designation: "Researcher",
+  //       src: "https://i.ibb.co.com/yFPpzh3y/6154604851913410356.jpg",
+  //     },
+  //   ];
+
+  return (
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-black dark:to-black">
+      {/* Header Section */}
+      <div className="text-center">
+        <CustomText name="Our Team" />
+      </div>
+
+      <AnimatedTeamCard team={team} />
+    </div>
+  );
 }
 
-export { TestimonialSection };
+export { TeamSection };

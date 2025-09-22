@@ -78,7 +78,7 @@ export function GooeyText({
     animate();
 
     return () => {
-      // Cleanup function if needed
+      // Cleanup function 
     };
   }, [texts, morphTime, cooldownTime]);
 
@@ -103,14 +103,14 @@ export function GooeyText({
         <span
           ref={text1Ref}
           className={cn(
-            "absolute inline-block select-none text-center text-6xl md:text-[60pt]",
+            "absolute inline-block select-none text-center  md:text-6xl text-3xl lg:text-7xl",
             "text-foreground",
             textClassName
           )} />
         <span
           ref={text2Ref}
           className={cn(
-            "absolute inline-block select-none text-center text-6xl md:text-[60pt]",
+            "absolute inline-block select-none text-center  md:text-6xl text-3xl lg:text-7xl",
             "text-foreground",
             textClassName
           )} />

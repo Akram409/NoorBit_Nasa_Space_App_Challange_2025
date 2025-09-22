@@ -1,43 +1,49 @@
 // FileName: /src/pages/Home/DocksSection.jsx
-import { useState, useEffect } from 'react';
-import { LimelightNav } from '@/components/limelight-nav';
-import { Home, LayoutList, MessageSquareText, Info, LayoutDashboard } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { LimelightNav } from "@/components/limelight-nav";
+import {
+  Home,
+  LayoutList,
+  MessageSquareText,
+  Info,
+  LayoutDashboard,
+} from "lucide-react";
 
 const scrollToSection = (id) => {
   const element = document.getElementById(id);
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
 const customNavItems = [
   {
-    id: 'home',
-    sectionId: 'home-section',
+    id: "home",
+    sectionId: "home-section",
     icon: <Home />,
-    label: 'Home',
-    onClick: () => scrollToSection('home-section')
+    label: "Home",
+    onClick: () => scrollToSection("home-section"),
   },
   {
-    id: 'features',
-    sectionId: 'features-section',
+    id: "features",
+    sectionId: "features-section",
     icon: <LayoutList />,
-    label: 'Features',
-    onClick: () => scrollToSection('features-section')
+    label: "Features",
+    onClick: () => scrollToSection("features-section"),
   },
   {
-    id: 'testimonials',
-    sectionId: 'testimonial-section',
+    id: "testimonials",
+    sectionId: "testimonial-section",
     icon: <MessageSquareText />,
-    label: 'Testimonials',
-    onClick: () => scrollToSection('testimonial-section')
+    label: "Testimonials",
+    onClick: () => scrollToSection("testimonial-section"),
   },
-{
-    id: 'dashboard',
-    sectionId: 'dashboard-section',
+  {
+    id: "dashboard",
+    sectionId: "dashboard-section",
     icon: <LayoutDashboard />,
-    label: 'Dashboard',
-    onClick: () => scrollToSection('dashboard-section')
+    label: "Dashboard",
+    onClick: () => scrollToSection("dashboard-section"),
   },
 ];
 
@@ -47,15 +53,17 @@ export function DocksSection() {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: '-10% 0px -80% 0px',
-      threshold: 0.1
+      rootMargin: "-15% 0px -60% 0px",
+      threshold: [0.1, 0.5],
     };
 
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const sectionId = entry.target.id;
-          const index = customNavItems.findIndex(item => item.sectionId === sectionId);
+          const index = customNavItems.findIndex(
+            (item) => item.sectionId === sectionId
+          );
           if (index !== -1) {
             setActiveIndex(index);
           }
@@ -63,10 +71,13 @@ export function DocksSection() {
       });
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
 
     // Observe all sections
-    customNavItems.forEach(item => {
+    customNavItems.forEach((item) => {
       const element = document.getElementById(item.sectionId);
       if (element) {
         observer.observe(element);

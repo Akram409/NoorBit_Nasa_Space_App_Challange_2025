@@ -1,6 +1,7 @@
 import React from "react";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
+import { MapPin } from "lucide-react";
 
 export function SparklesPreview() {
   return (
@@ -66,7 +67,7 @@ export function SparklesPreviewColorful() {
           minSize={0.6}
           maxSize={1.4}
           particleDensity={100}
-          className="w-full h-full dark:hidden"  // hidden in dark mode
+          className="w-full h-full dark:hidden"
           particleColor="#0066ff"
           speed={0.5}
         />
@@ -77,7 +78,7 @@ export function SparklesPreviewColorful() {
           minSize={0.6}
           maxSize={1.4}
           particleDensity={100}
-          className="w-full h-full hidden dark:block"  // only visible in dark mode
+          className="w-full h-full hidden dark:block"
           particleColor="#00ffcc"
           speed={0.5}
         />
@@ -85,24 +86,31 @@ export function SparklesPreviewColorful() {
 
       {/* Foreground Text */}
       <div className="flex flex-col items-center justify-center z-20">
+
+        <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-pulse">
+          <MapPin className="w-4 h-4" />
+          NASA Space Apps Challenge 2025
+        </div>
         <h1
           className="
-            md:text-6xl text-4xl lg:text-8xl font-extrabold text-center
-            bg-clip-text text-transparent 
-            bg-gradient-to-b from-black to-neutral-600
-            dark:from-neutral-50 dark:to-neutral-400
+            text-4xl md:text-5xl lg:text-7xl font-bold  bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-400 dark:to-green-400 animate-gradient-x
           "
         >
-          Innovating for Sustainability
+          Data Pathways to Healthy Cities
         </h1>
 
         <div className="h-[200px] flex items-center justify-center">
           <GooeyText
-            texts={["Resilience", "Green", "Action", "Sustainability"]}
+            texts={[
+              "Urban Data",
+              "Resilience",
+              "Green Spaces",
+              "Climate Action",
+            ]}
             morphTime={1}
             cooldownTime={0.25}
             className="
-              md:text-6xl text-3xl lg:text-8xl font-bold text-center
+              font-bold text-center
               bg-clip-text text-transparent
               bg-gradient-to-b from-black to-neutral-600
               dark:from-neutral-50 dark:to-neutral-400
@@ -111,11 +119,9 @@ export function SparklesPreviewColorful() {
         </div>
 
         <p className="cursor-default text-center text-xl lg:text-2xl mt-4 text-neutral-700 dark:text-neutral-300">
-          Building a better tomorrow, today.
+          Leveraging data for sustainable urban development.
         </p>
       </div>
     </div>
   );
 }
-
-

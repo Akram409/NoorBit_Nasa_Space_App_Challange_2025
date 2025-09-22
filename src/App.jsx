@@ -2,7 +2,7 @@ import { SparklesPreviewColorful } from './pages/Home/HeroSection'
 import { FeaturesSection } from './pages/Home/FeatureSection'
 import { OrbitTimeline } from './pages/Home/OrbitTimeLine'
 import GallerySection from './pages/Home/GallerySection'
-import { TestimonialSection } from './pages/Home/TestimonialSection'
+import { TeamSection } from './pages/Home/TestimonialSection'
 
 import { Footer } from './pages/Home/Footer'
 import { DocksSection } from './pages/Home/DocksSection'
@@ -24,8 +24,8 @@ function App() {
     {/* <OrbitTimeline /> */}
     {/* <GallerySection/> */}
 
-    <div id="testimonial-section">
-      <TestimonialSection />
+    <div id="testimonial-section" >
+      <TeamSection />
     </div>
 
     <div id="footer-section" >
