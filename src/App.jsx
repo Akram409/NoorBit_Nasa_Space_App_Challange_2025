@@ -1,7 +1,6 @@
 import { SparklesPreviewColorful } from "./pages/Home/HeroSection";
 import { FeaturesSection } from "./pages/Home/FeatureSection";
 import { OrbitTimeline } from "./pages/Home/OrbitTimeLine";
-import GallerySection from "./pages/Home/GallerySection";
 import { TeamSection } from "./pages/Home/TeamSection";
 
 import { Footer } from "./pages/Home/Footer";

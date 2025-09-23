@@ -1,17 +1,22 @@
-// FileName: /src/pages/Home/DocksSection.jsx
 import { useState, useEffect } from "react";
 import { LimelightNav } from "@/components/limelight-nav";
 import {
   Home,
   LayoutList,
   MessageSquareText,
-  Info,
-  LayoutDashboard,
   OrbitIcon,
   Satellite,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const scrollToSection = (id) => {
+
+
+
+export function DocksSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const scrollToSection = (id) => {
   const element = document.getElementById(id);
   if (element) {
     element.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -52,12 +57,9 @@ const customNavItems = [
     sectionId: "dashboard-section",
     icon: <Satellite />,
     label: "Dashboard",
-    onClick: () => scrollToSection("dashboard-section"),
+    onClick: () => navigate("/dashboard")
   },
 ];
-
-export function DocksSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const observerOptions = {
