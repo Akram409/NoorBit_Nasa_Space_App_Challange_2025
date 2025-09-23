@@ -5,6 +5,7 @@ import { TeamSection } from "./pages/Home/TeamSection";
 
 import { Footer } from "./pages/Home/Footer";
 import { DocksSection } from "./pages/Home/DocksSection";
+import GloryVideo from "./pages/Home/GloryVideo";
 
 function App() {
   return (
@@ -21,6 +22,10 @@ function App() {
 
       <div id="orbit-timeline-section">
         <OrbitTimeline />
+      </div>
+
+      <div id="glory-video-section">
+        <GloryVideo />
       </div>
 
       <div id="testimonial-section">

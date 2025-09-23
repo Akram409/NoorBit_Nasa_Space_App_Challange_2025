@@ -6,6 +6,7 @@ import {
   MessageSquareText,
   OrbitIcon,
   Satellite,
+  Video,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -44,6 +45,13 @@ const customNavItems = [
     icon: <OrbitIcon />,     
     label: "Orbit Timeline",
     onClick: () => scrollToSection("orbit-timeline-section"),
+  },
+   {
+    id: "glory-video-section",          
+    sectionId: "glory-video-section",
+    icon: <Video />,     
+    label: "Glory Video",
+    onClick: () => scrollToSection("glory-video-section"),
   },
   {
     id: "testimonials",
