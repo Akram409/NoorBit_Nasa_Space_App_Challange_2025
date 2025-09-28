@@ -17,7 +17,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import KPIPage from "./KPI/KPI";
-
+import UrbanBalancePage from "./UrbanBalance/UrbanBalancePage";
+        // "vercel-build": "npm install --legacy-peer-deps && next build",
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = React.useState(true);
@@ -271,18 +272,18 @@ const WeatherPage = () => (
   </div>
 );
 
-const UrbanBalancePage = () => (
-  <div className="space-y-6">
-    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-      Urban Balance
-    </h1>
-    <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
-      <p className="text-gray-600 dark:text-gray-300">
-        Urban planning and balance metrics will be displayed here.
-      </p>
-    </div>
-  </div>
-);
+// const UrbanBalancePage = () => (
+//   <div className="space-y-6">
+//     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+//       Urban Balance
+//     </h1>
+//     <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
+//       <p className="text-gray-600 dark:text-gray-300">
+//         Urban planning and balance metrics will be displayed here.
+//       </p>
+//     </div>
+//   </div>
+// );
 
 const AIInsightsPage = () => (
   <div className="space-y-6">

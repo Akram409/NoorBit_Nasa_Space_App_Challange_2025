@@ -1,0 +1,420 @@
+/* UrbanBalancePage.css */
+
+.urban-balance-container {
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+}
+
+.location-search input {
+  background-color: #333;
+  border: 1px solid #555;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  width: 300px;
+  font-size: 14px;
+}
+
+.location-search input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links span {
+  cursor: pointer;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.nav-links span:hover {
+  background-color: #333;
+}
+
+/* Main Content */
+.main-content {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* Map Panel */
+.map-panel {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-container {
+  flex: 2;
+  position: relative;
+  height: 60%;
+}
+
+.map-info-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(42, 42, 42, 0.9);
+  padding: 15px;
+  border-radius: 8px;
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.location-info h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+.location-info p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+}
+
+.coordinates {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Actions Panel */
+.actions-panel {
+  height: 40%;
+  background-color: #2a2a2a;
+  padding: 20px;
+  overflow-y: auto;
+  border-top: 1px solid #444;
+}
+
+.actions-panel h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #4CAF50;
+}
+
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  padding: 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.action-item:hover {
+  background-color: #3a3a3a;
+}
+
+.action-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.action-content {
+  flex: 1;
+}
+
+.action-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  color: #4CAF50;
+}
+
+.action-content p {
+  margin: 0;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.action-impact {
+  display: flex;
+  align-items: center;
+}
+
+.impact {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.impact.high {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.impact.medium {
+  background-color: #FFA726;
+  color: white;
+}
+
+/* Metrics Panel */
+.metrics-panel {
+  flex: 1;
+  background-color: #2a2a2a;
+  padding: 20px;
+  overflow-y: auto;
+  border-left: 1px solid #444;
+}
+
+/* Environmental Metrics */
+.metrics-section {
+  margin-bottom: 30px;
+}
+
+.metric-item {
+  margin-bottom: 20px;
+}
+
+.metric-label {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.metric-value-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric-value {
+  min-width: 50px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.metric-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #444;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metric-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.metric-fill.orange {
+  background-color: #FFA726;
+}
+
+.metric-fill.red {
+  background-color: #F44336;
+}
+
+.metric-fill.blue {
+  background-color: #2196F3;
+}
+
+.metric-fill.green {
+  background-color: #4CAF50;
+}
+
+/* Health Score Section */
+.health-score-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.health-score-section h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+.score-subtitle {
+  margin: 0 0 20px 0;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.circular-progress {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.score-number {
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+}
+
+.score-range {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* Projected Score Section */
+.projected-score-section {
+  background-color: #1e3a3a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #4CAF50;
+}
+
+.projected-header h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+.updated-projection {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.projection-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.projection-items li {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+.projected-circular-progress {
+  position: relative;
+  display: inline-block;
+}
+
+.projected-score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.projected-score-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 26, 26, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #444;
+  border-top: 3px solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .map-panel {
+    height: 60%;
+  }
+  
+  .metrics-panel {
+    height: 40%;
+    border-left: none;
+    border-top: 1px solid #444;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .location-search input {
+    width: 100%;
+  }
+  
+  .nav-links {
+    justify-content: center;
+  }
+  
+  .action-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .action-icon {
+    margin: 0 0 10px 0;
+  }
+}
+
+/* Leaflet popup customization */
+.leaflet-popup-content-wrapper {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.leaflet-popup-tip {
+  background-color: #2a2a2a;
+}
