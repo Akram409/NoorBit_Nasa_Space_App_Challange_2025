@@ -15,7 +15,6 @@ import {
   Layers,
 } from "lucide-react";
 
-
 // **Data Service Class with Geocoding**
 class DataService {
   constructor() {
@@ -210,109 +209,43 @@ const MapComponent = ({
   });
 
   // heatmap data**
-  const generateHeatmapData = (center, type) => {
+  const generateHeatmapData = (center, type, zoomLevel = 12) => {
     const points = [];
 
+    // Adjust density and spread based on zoom level
+    const baseRadius = zoomLevel > 14 ? 0.01 : zoomLevel > 12 ? 0.02 : 0.03;
+    const numPoints = zoomLevel > 14 ? 200 : zoomLevel > 12 ? 150 : 100;
 
-    
+    // Create multiple temperature zones with varying intensities
+    const numZones = 4 + Math.floor(Math.random() * 3); // 4-6 zones
 
-    if (type === "temperature") {
-      // Create multiple heat centers for blob-like patterns
-      const heatCenters = [];
-      const numCenters = 3 + Math.floor(Math.random() * 4); // 3-6 heat centers
+    for (let zone = 0; zone < numZones; zone++) {
+      // Create zone center near the selected location
+      const zoneLat = center.lat + (Math.random() - 0.5) * baseRadius * 2;
+      const zoneLon = center.lon + (Math.random() - 0.5) * baseRadius * 2;
 
-      // Generate heat center locations
-      for (let i = 0; i < numCenters; i++) {
-        heatCenters.push({
-          lat: center.lat + (Math.random() - 0.5) * 0.1,
-          lon: center.lon + (Math.random() - 0.5) * 0.1,
-          intensity: 0.5 + Math.random() * 0.5,
-          radius: 0.02 + Math.random() * 0.03,
-        });
-      }
+      // Assign different temperature ranges to different zones
+      let baseTemp = 20 + Math.random() * 15; // 20-35°C base temperature
+      if (zone === 0) baseTemp += 5; // Hottest zone
+      if (zone === numZones - 1) baseTemp -= 8; // Coolest zone
 
-      // Generate points around each heat center
-      heatCenters.forEach((heatCenter) => {
-        // Core points (high intensity)
-        for (let i = 0; i < 30; i++) {
-          const angle = (Math.PI * 2 * i) / 30;
-          const distance = Math.random() * heatCenter.radius * 0.3;
+      const pointsPerZone = Math.floor(numPoints / numZones);
 
-          points.push([
-            heatCenter.lat + Math.sin(angle) * distance,
-            heatCenter.lon + Math.cos(angle) * distance,
-            heatCenter.intensity * (0.8 + Math.random() * 0.2),
-          ]);
-        }
+      for (let i = 0; i < pointsPerZone; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance =
+          Math.random() * baseRadius * (0.5 + Math.random() * 0.5);
 
-        // Mid-range points (medium intensity)
-        for (let i = 0; i < 40; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const distance = heatCenter.radius * (0.3 + Math.random() * 0.4);
+        const lat = zoneLat + Math.sin(angle) * distance;
+        const lng = zoneLon + Math.cos(angle) * distance;
 
-          points.push([
-            heatCenter.lat + Math.sin(angle) * distance,
-            heatCenter.lon + Math.cos(angle) * distance,
-            heatCenter.intensity * (0.4 + Math.random() * 0.3),
-          ]);
-        }
+        // Temperature varies within the zone
+        const tempVariation = (Math.random() - 0.5) * 6; // ±3°C variation
+        const temperature = baseTemp + tempVariation;
 
-        // Outer points (low intensity)
-        for (let i = 0; i < 20; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const distance = heatCenter.radius * (0.7 + Math.random() * 0.5);
-
-          points.push([
-            heatCenter.lat + Math.sin(angle) * distance,
-            heatCenter.lon + Math.cos(angle) * distance,
-            heatCenter.intensity * (0.1 + Math.random() * 0.2),
-          ]);
-        }
-      });
-
-      // Add connecting points between heat centers
-      for (let i = 0; i < heatCenters.length - 1; i++) {
-        const center1 = heatCenters[i];
-        const center2 = heatCenters[i + 1];
-
-        // Create gradient between centers
-        for (let j = 0; j < 20; j++) {
-          const t = j / 20;
-          const lat = center1.lat + (center2.lat - center1.lat) * t;
-          const lon = center1.lon + (center2.lon - center1.lon) * t;
-          const intensity =
-            center1.intensity + (center2.intensity - center1.intensity) * t;
-
-          // Add some randomness to create natural edges
-          for (let k = 0; k < 5; k++) {
-            points.push([
-              lat + (Math.random() - 0.5) * 0.01,
-              lon + (Math.random() - 0.5) * 0.01,
-              intensity * (0.3 + Math.random() * 0.4),
-            ]);
-          }
-        }
-      }
-    } else {
-      // Original implementation for other types
-      const radius = 0.5;
-      for (let i = 0; i < 50; i++) {
-        const angle = (Math.PI * 2 * i) / 50;
-        const distance = Math.random() * radius;
-        const lat = center.lat + Math.sin(angle) * distance;
-        const lng = center.lon + Math.cos(angle) * distance;
-
-        let intensity;
-        switch (type) {
-          case "airPollution":
-            intensity = 0.2 + Math.random() * 0.6;
-            break;
-          case "flood":
-            intensity = Math.random() * 0.5;
-            break;
-          default:
-            intensity = Math.random();
-        }
+        // Intensity should match the max value (10.0 in your case)
+        // Scale temperature to intensity (assuming temp range 10-40°C)
+        const intensity = Math.max(0, Math.min(10, (temperature - 10) / 3)); // Scale to 0-10
 
         points.push([lat, lng, intensity]);
       }
@@ -321,117 +254,324 @@ const MapComponent = ({
     return points;
   };
 
-    // **Generate pollution heatmap data**
-const generatePollutionHeatmap = (center, aqiValue) => {
-  const points = [];
-  
-  // Create irregular pollution clouds based on AQI severity
-  const severity = aqiValue / 200; // Normalize to 0-1 scale
-  const numClouds = Math.floor(severity * 5) + 3; // 3-8 clouds
-  
-  // Generate pollution cloud centers with wind drift
-  const windDirection = Math.random() * Math.PI * 2;
-  const windStrength = 0.02 + severity * 0.03;
-  
-  const pollutionClouds = [];
-  for (let i = 0; i < numClouds; i++) {
-    // Drift clouds in wind direction
-    const driftAmount = windStrength * (i / numClouds);
-    pollutionClouds.push({
-      lat: center.lat + (Math.random() - 0.5) * 0.1 + Math.sin(windDirection) * driftAmount,
-      lon: center.lon + (Math.random() - 0.5) * 0.1 + Math.cos(windDirection) * driftAmount,
-      intensity: severity * (0.6 + Math.random() * 0.4),
-      radius: 0.02 + Math.random() * 0.05,
-      shape: Math.random() // For irregular shapes
+  // **Generate pollution heatmap data**
+  const generatePollutionHeatmap = (center, aqiValue) => {
+    const points = [];
+
+    // Create irregular pollution clouds based on AQI severity
+    const severity = aqiValue / 200; // Normalize to 0-1 scale
+    const numClouds = Math.floor(severity * 5) + 10; // 3-8 clouds
+
+    // Generate pollution cloud centers with wind drift
+    const windDirection = Math.random() * Math.PI * 2;
+    const windStrength = 0.02 + severity * 0.03;
+
+    const pollutionClouds = [];
+    for (let i = 0; i < numClouds; i++) {
+      // Drift clouds in wind direction
+      const driftAmount = windStrength * (i / numClouds);
+      pollutionClouds.push({
+        lat:
+          center.lat +
+          (Math.random() - 0.5) * 0.1 +
+          Math.sin(windDirection) * driftAmount,
+        lon:
+          center.lon +
+          (Math.random() - 0.5) * 0.1 +
+          Math.cos(windDirection) * driftAmount,
+        intensity: severity * (0.6 + Math.random() * 0.4),
+        radius: 0.02 + Math.random() * 0.05,
+        shape: Math.random(), // For irregular shapes
+      });
+    }
+
+    // Create organic blob patterns
+    pollutionClouds.forEach((cloud) => {
+      // Dense core with irregular shape
+      const numCorePoints = 100;
+      for (let i = 0; i < numCorePoints; i++) {
+        const angle = (Math.PI * 2 * i) / numCorePoints;
+        // Add noise to radius for irregular shape
+        const noiseRadius = cloud.radius * (0.3 + Math.random() * 0.4);
+        const wobble = Math.sin(angle * 3 + cloud.shape) * 0.3 + 1;
+
+        points.push([
+          cloud.lat + Math.sin(angle) * noiseRadius * wobble,
+          cloud.lon + Math.cos(angle) * noiseRadius * wobble,
+          cloud.intensity * (0.8 + Math.random() * 0.2),
+        ]);
+      }
+
+      // Diffusion zone with particles
+      const numDiffusionPoints = 150;
+      for (let i = 0; i < numDiffusionPoints; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = cloud.radius * (0.5 + Math.random() * 1.5);
+        // Exponential decay for natural diffusion
+        const decayFactor = Math.exp(-distance / cloud.radius);
+
+        points.push([
+          cloud.lat + Math.sin(angle) * distance,
+          cloud.lon + Math.cos(angle) * distance,
+          cloud.intensity * decayFactor * (0.2 + Math.random() * 0.6),
+        ]);
+      }
     });
-  }
-  
-  // Create organic blob patterns
-  pollutionClouds.forEach(cloud => {
-    // Dense core with irregular shape
-    const numCorePoints = 100;
-    for (let i = 0; i < numCorePoints; i++) {
-      const angle = (Math.PI * 2 * i) / numCorePoints;
-      // Add noise to radius for irregular shape
-      const noiseRadius = cloud.radius * (0.3 + Math.random() * 0.4);
-      const wobble = Math.sin(angle * 3 + cloud.shape) * 0.3 + 1;
-      
-      points.push([
-        cloud.lat + Math.sin(angle) * noiseRadius * wobble,
-        cloud.lon + Math.cos(angle) * noiseRadius * wobble,
-        cloud.intensity * (0.8 + Math.random() * 0.2)
-      ]);
+
+    // Add connecting streams between clouds
+    for (let i = 0; i < pollutionClouds.length - 1; i++) {
+      const cloud1 = pollutionClouds[i];
+      const cloud2 = pollutionClouds[i + 1];
+
+      // Create turbulent flow between clouds
+      const numStreamPoints = 50;
+      for (let j = 0; j < numStreamPoints; j++) {
+        const t = j / numStreamPoints;
+        const lat = cloud1.lat + (cloud2.lat - cloud1.lat) * t;
+        const lon = cloud1.lon + (cloud2.lon - cloud1.lon) * t;
+
+        // Add turbulence
+        const turbulence = 0.01 * Math.sin(t * Math.PI * 4);
+        const intensity =
+          cloud1.intensity + (cloud2.intensity - cloud1.intensity) * t;
+
+        points.push([
+          lat + (Math.random() - 0.5) * turbulence,
+          lon + (Math.random() - 0.5) * turbulence,
+          intensity * (0.4 + Math.random() * 0.4),
+        ]);
+      }
     }
-    
-    // Diffusion zone with particles
-    const numDiffusionPoints = 150;
-    for (let i = 0; i < numDiffusionPoints; i++) {
+
+    return points;
+  };
+
+  const generateGreenCoverHeatmap = (center, percentage) => {
+    const points = [];
+    const numHotspots = Math.floor(percentage / 20) + 1; // More hotspots for higher percentage
+    const baseRadius = 0.03; // Base radius for hotspots
+
+    for (let i = 0; i < numHotspots; i++) {
+      // Randomly place hotspots around the center
+      const hotspotLat = center.lat + (Math.random() - 0.5) * 0.1;
+      const hotspotLon = center.lon + (Math.random() - 0.5) * 0.1;
+      const hotspotIntensity = 0.5 + Math.random() * 0.5; // Vary intensity
+
+      // Generate points for each hotspot
+      const numPointsPerHotspot = 50 + Math.floor(Math.random() * 50);
+      for (let j = 0; j < numPointsPerHotspot; j++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * baseRadius * (0.5 + Math.random()); // Vary distance
+        const lat = hotspotLat + Math.sin(angle) * distance;
+        const lng = hotspotLon + Math.cos(angle) * distance;
+
+        // Intensity decreases with distance from hotspot center
+        const intensity =
+          hotspotIntensity * (1 - distance / (baseRadius * 1.5));
+        points.push([lat, lng, Math.max(0, intensity)]); // Ensure intensity is not negative
+      }
+    }
+
+    // Add some background greenness, especially if percentage is high
+    if (percentage > 30) {
+      const numBackgroundPoints = 100;
+      const backgroundRadius = 0.08;
+      for (let i = 0; i < numBackgroundPoints; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * backgroundRadius;
+        const lat = center.lat + Math.sin(angle) * distance;
+        const lng = center.lon + Math.cos(angle) * distance;
+        const intensity = (percentage / 100) * (0.1 + Math.random() * 0.2); // Lower intensity for background
+        points.push([lat, lng, intensity]);
+      }
+    }
+
+    return points;
+  };
+
+  const generateWaterQualityHeatmap = (center, qualityValue) => {
+    const points = [];
+    const baseRadius = 0.05; // Base radius for pollution spread
+    const numPoints = 100;
+
+    // Determine the "severity" of pollution (0 for good, 1 for bad)
+    // Assuming qualityValue is 0-100, where 100 is good.
+    // So, severity = (100 - qualityValue) / 100
+    const severity = (100 - qualityValue) / 100;
+
+    // Create a central "hotspot" for the water body
+    const mainHotspotLat = center.lat + (Math.random() - 0.5) * 0.02;
+    const mainHotspotLon = center.lon + (Math.random() - 0.5) * 0.02;
+
+    // Generate points around the main hotspot
+    for (let i = 0; i < numPoints; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const distance = cloud.radius * (0.5 + Math.random() * 1.5);
-      // Exponential decay for natural diffusion
-      const decayFactor = Math.exp(-distance / cloud.radius);
-      
-      points.push([
-        cloud.lat + Math.sin(angle) * distance,
-        cloud.lon + Math.cos(angle) * distance,
-        cloud.intensity * decayFactor * (0.2 + Math.random() * 0.6)
-      ]);
+      const distance = Math.random() * baseRadius * (0.5 + severity * 0.5); // Larger spread for worse quality
+
+      const lat = mainHotspotLat + Math.sin(angle) * distance;
+      const lng = mainHotspotLon + Math.cos(angle) * distance;
+
+      // Intensity is higher for worse quality, and decreases with distance
+      const intensity = severity * (1 - distance / (baseRadius * 1.5));
+      points.push([lat, lng, Math.max(0, intensity)]); // Ensure intensity is not negative
     }
-  });
-  
-  // Add connecting streams between clouds
-  for (let i = 0; i < pollutionClouds.length - 1; i++) {
-    const cloud1 = pollutionClouds[i];
-    const cloud2 = pollutionClouds[i + 1];
-    
-    // Create turbulent flow between clouds
-    const numStreamPoints = 50;
-    for (let j = 0; j < numStreamPoints; j++) {
-      const t = j / numStreamPoints;
-      const lat = cloud1.lat + (cloud2.lat - cloud1.lat) * t;
-      const lon = cloud1.lon + (cloud2.lon - cloud1.lon) * t;
-      
-      // Add turbulence
-      const turbulence = 0.01 * Math.sin(t * Math.PI * 4);
-      const intensity = cloud1.intensity + (cloud2.intensity - cloud1.intensity) * t;
-      
-      points.push([
-        lat + (Math.random() - 0.5) * turbulence,
-        lon + (Math.random() - 0.5) * turbulence,
-        intensity * (0.4 + Math.random() * 0.4)
-      ]);
+
+    // Add some smaller, irregular "pollution patches" if quality is moderate/poor
+    if (severity > 0.3) {
+      const numPatches = Math.floor(severity * 5); // More patches for worse quality
+      const patchRadius = baseRadius * 0.3;
+
+      for (let i = 0; i < numPatches; i++) {
+        const patchLat = center.lat + (Math.random() - 0.5) * 0.1;
+        const patchLon = center.lon + (Math.random() - 0.5) * 0.1;
+
+        for (let j = 0; j < 30; j++) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.random() * patchRadius;
+          const lat = patchLat + Math.sin(angle) * distance;
+          const lng = patchLon + Math.cos(angle) * distance;
+          const intensity = severity * (0.3 + Math.random() * 0.4); // Patches have moderate intensity
+          points.push([lat, lng, intensity]);
+        }
+      }
     }
-  }
-  
-  return points;
-};
+
+    return points;
+  };
+
+  const generateFloodRiskHeatmap = (center, riskLevel) => {
+    const points = [];
+
+    // Determine risk parameters
+    let riskIntensity = 0.3; // Default for Low
+    let numHotspots = 2;
+    let spreadRadius = 0.04;
+
+    if (riskLevel === "High") {
+      riskIntensity = 0.8;
+      numHotspots = 6;
+      spreadRadius = 0.08;
+    } else if (riskLevel === "Moderate") {
+      riskIntensity = 0.6;
+      numHotspots = 4;
+      spreadRadius = 0.06;
+    }
+
+    // Create main flood-prone areas (like river valleys, low-lying areas)
+    for (let i = 0; i < numHotspots; i++) {
+      // Create irregular hotspots around the center
+      const hotspotLat = center.lat + (Math.random() - 0.5) * 0.1;
+      const hotspotLon = center.lon + (Math.random() - 0.5) * 0.1;
+
+      // Create elongated patterns (like river courses or drainage areas)
+      const elongationAngle = Math.random() * Math.PI * 2;
+      const elongationFactor = 1.5 + Math.random() * 2; // Make some areas more elongated
+
+      const numPointsPerHotspot = 40 + Math.floor(Math.random() * 60);
+
+      for (let j = 0; j < numPointsPerHotspot; j++) {
+        const angle = Math.random() * Math.PI * 2;
+        let distance = Math.random() * spreadRadius;
+
+        // Create elongated patterns
+        if (
+          Math.abs(angle - elongationAngle) < Math.PI / 4 ||
+          Math.abs(angle - elongationAngle - Math.PI) < Math.PI / 4
+        ) {
+          distance *= elongationFactor;
+        }
+
+        const lat = hotspotLat + Math.sin(angle) * distance;
+        const lng = hotspotLon + Math.cos(angle) * distance;
+
+        // Intensity varies with distance and adds some randomness
+        const baseIntensity =
+          riskIntensity * (1 - distance / (spreadRadius * 2));
+        const intensity = Math.max(
+          0,
+          baseIntensity * (0.7 + Math.random() * 0.6)
+        );
+
+        points.push([lat, lng, intensity]);
+      }
+    }
+
+    // Add scattered risk points (representing drainage issues, etc.)
+    const numScatteredPoints = Math.floor(riskIntensity * 100);
+    for (let i = 0; i < numScatteredPoints; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 0.12;
+      const lat = center.lat + Math.sin(angle) * distance;
+      const lng = center.lon + Math.cos(angle) * distance;
+      const intensity = riskIntensity * (0.2 + Math.random() * 0.3);
+      points.push([lat, lng, intensity]);
+    }
+
+    // Add connecting corridors (like water flow paths)
+    if (riskLevel === "High" || riskLevel === "Moderate") {
+      const numCorridors = riskLevel === "High" ? 3 : 2;
+
+      for (let i = 0; i < numCorridors; i++) {
+        const startAngle = Math.random() * Math.PI * 2;
+        const corridorLength = 0.06 + Math.random() * 0.04;
+        const numCorridorPoints = 30;
+
+        for (let j = 0; j < numCorridorPoints; j++) {
+          const progress = j / numCorridorPoints;
+          const distance = progress * corridorLength;
+          const width = (0.01 + Math.random() * 0.01) * (1 - progress * 0.5); // Narrowing corridor
+
+          // Main corridor line
+          const mainLat = center.lat + Math.sin(startAngle) * distance;
+          const mainLng = center.lon + Math.cos(startAngle) * distance;
+
+          // Add width variation
+          const sideAngle = startAngle + Math.PI / 2;
+          const sideOffset = (Math.random() - 0.5) * width;
+
+          const lat = mainLat + Math.sin(sideAngle) * sideOffset;
+          const lng = mainLng + Math.cos(sideAngle) * sideOffset;
+
+          const intensity =
+            riskIntensity * (0.4 + Math.random() * 0.3) * (1 - progress * 0.3);
+          points.push([lat, lng, Math.max(0, intensity)]);
+        }
+      }
+    }
+
+    return points;
+  };
 
   // **Create visualization layers**
   const createVisualizationLayers = (L, map) => {
-
+    const currentZoom = map.getZoom();
     // Temperature Heatmap Layer
     if (activeKPIs.temperature && temperature) {
       if (layersRef.current.temperature) {
         map.removeLayer(layersRef.current.temperature);
       }
 
-      const heatData = generateHeatmapData(selectedLocation, "temperature");
+      const heatData = generateHeatmapData(
+        selectedLocation,
+        "temperature",
+        currentZoom
+      );
 
       layersRef.current.temperature = L.heatLayer(heatData, {
-        radius: 35, // Increased radius for more overlap
-        blur: 25, // Increased blur for smoother gradients
-        maxZoom: 17,
-        max: 1.0, // Maximum intensity value
+        radius: currentZoom > 14 ? 30 : currentZoom > 12 ? 25 : 20, 
+        blur: currentZoom > 14 ? 20 : currentZoom > 12 ? 25 : 35, 
+        maxZoom: 18, 
+        max: 5.0,
         gradient: {
-          0.0: "rgba(0, 0, 255, 0)", // Transparent blue
-          0.2: "rgba(0, 100, 255, 0.5)", // Light blue
-          0.4: "rgba(0, 255, 255, 0.7)", // Cyan
-          0.5: "rgba(0, 255, 0, 0.8)", // Green
-          0.6: "rgba(255, 255, 0, 0.9)", // Yellow
-          0.8: "rgba(255, 100, 0, 0.95)", // Orange
-          1.0: "rgba(255, 0, 0, 1)", // Red
+          0.0: "rgba(0, 0, 255, 0)", // Transparent blue (0°C equivalent)
+          0.1: "rgba(0, 100, 255, 0.4)", // Light blue (~13°C)
+          0.3: "rgba(0, 255, 255, 0.6)", // Cyan (~19°C)
+          0.5: "rgba(0, 255, 0, 0.7)", // Green (~25°C)
+          0.7: "rgba(255, 255, 0, 0.8)", // Yellow (~31°C)
+          0.9: "rgba(255, 100, 0, 0.9)", // Orange (~37°C)
+          1.0: "rgba(255, 0, 0, 1)", // Red (≥40°C)
         },
-        minOpacity: 0.05, // Minimum opacity for subtle edges
+        minOpacity: 0.1, // Reduced for clearer contrast
       }).addTo(map);
     } else if (layersRef.current.temperature) {
       map.removeLayer(layersRef.current.temperature);
@@ -439,93 +579,98 @@ const generatePollutionHeatmap = (center, aqiValue) => {
     }
 
     // Air Pollution Circles
-if (activeKPIs.airPollution && liveData.airPollution) {
-  if (layersRef.current.airPollution) {
-    map.removeLayer(layersRef.current.airPollution);
-  }
+    if (activeKPIs.airPollution && liveData.airPollution) {
+      if (layersRef.current.airPollution) {
+        map.removeLayer(layersRef.current.airPollution);
+      }
 
-  const layers = [];
-  
-  // Determine gradient based on AQI value
-  const getAQIGradient = (aqi) => {
-    if (aqi <= 50) { // Good - Green
-      return {
-        0.0: "rgba(0, 228, 0, 0)",
-        0.2: "rgba(0, 228, 0, 0.2)",
-        0.4: "rgba(0, 228, 0, 0.3)",
-        0.6: "rgba(0, 228, 0, 0.4)",
-        0.8: "rgba(0, 228, 0, 0.5)",
-        1.0: "rgba(0, 228, 0, 0.6)"
-      };
-    } else if (aqi <= 100) { // Moderate - Yellow
-      return {
-        0.0: "rgba(255, 255, 0, 0)",
-        0.2: "rgba(255, 255, 0, 0.2)",
-        0.4: "rgba(255, 220, 0, 0.3)",
-        0.6: "rgba(255, 200, 0, 0.4)",
-        0.8: "rgba(255, 180, 0, 0.5)",
-        1.0: "rgba(255, 160, 0, 0.6)"
-      };
-    } else if (aqi <= 150) { // Unhealthy for Sensitive - Orange
-      return {
-        0.0: "rgba(255, 126, 0, 0)",
-        0.2: "rgba(255, 126, 0, 0.3)",
-        0.4: "rgba(255, 106, 0, 0.4)",
-        0.6: "rgba(255, 86, 0, 0.5)",
-        0.8: "rgba(255, 66, 0, 0.6)",
-        1.0: "rgba(255, 46, 0, 0.7)"
-      };
-    } else if (aqi <= 200) { // Unhealthy - Red
-      return {
-        0.0: "rgba(255, 0, 0, 0)",
-        0.2: "rgba(255, 0, 0, 0.3)",
-        0.4: "rgba(235, 0, 0, 0.4)",
-        0.6: "rgba(215, 0, 0, 0.5)",
-        0.8: "rgba(195, 0, 0, 0.6)",
-        1.0: "rgba(175, 0, 0, 0.7)"
-      };
-    } else { // Hazardous - Purple
-      return {
-        0.0: "rgba(143, 63, 151, 0)",
-        0.2: "rgba(143, 63, 151, 0.4)",
-        0.4: "rgba(123, 43, 131, 0.5)",
-        0.6: "rgba(103, 23, 111, 0.6)",
-        0.8: "rgba(83, 3, 91, 0.7)",
-        1.0: "rgba(63, 0, 71, 0.8)"
-      };
-    }
-  };
+      const layers = [];
 
-  // Create main pollution heatmap
-  const pollutionData = generatePollutionHeatmap(
-    selectedLocation,
-    liveData.airPollution.aqi
-  );
+      // Determine gradient based on AQI value
+      const getAQIGradient = (aqi) => {
+        if (aqi <= 50) {
+          // Good - Green
+          return {
+            0.0: "rgba(0, 228, 0, 0)",
+            0.2: "rgba(0, 228, 0, 0.2)",
+            0.4: "rgba(0, 228, 0, 0.3)",
+            0.6: "rgba(0, 228, 0, 0.4)",
+            0.8: "rgba(0, 228, 0, 0.5)",
+            1.0: "rgba(0, 228, 0, 0.6)",
+          };
+        } else if (aqi <= 100) {
+          // Moderate - Yellow
+          return {
+            0.0: "rgba(255, 255, 0, 0)",
+            0.2: "rgba(255, 255, 0, 0.2)",
+            0.4: "rgba(255, 220, 0, 0.3)",
+            0.6: "rgba(255, 200, 0, 0.4)",
+            0.8: "rgba(255, 180, 0, 0.5)",
+            1.0: "rgba(255, 160, 0, 0.6)",
+          };
+        } else if (aqi <= 150) {
+          // Unhealthy for Sensitive - Orange
+          return {
+            0.0: "rgba(255, 126, 0, 0)",
+            0.2: "rgba(255, 126, 0, 0.3)",
+            0.4: "rgba(255, 106, 0, 0.4)",
+            0.6: "rgba(255, 86, 0, 0.5)",
+            0.8: "rgba(255, 66, 0, 0.6)",
+            1.0: "rgba(255, 46, 0, 0.7)",
+          };
+        } else if (aqi <= 200) {
+          // Unhealthy - Red
+          return {
+            0.0: "rgba(255, 0, 0, 0)",
+            0.2: "rgba(255, 0, 0, 0.3)",
+            0.4: "rgba(235, 0, 0, 0.4)",
+            0.6: "rgba(215, 0, 0, 0.5)",
+            0.8: "rgba(195, 0, 0, 0.6)",
+            1.0: "rgba(175, 0, 0, 0.7)",
+          };
+        } else {
+          // Hazardous - Purple
+          return {
+            0.0: "rgba(143, 63, 151, 0)",
+            0.2: "rgba(143, 63, 151, 0.4)",
+            0.4: "rgba(123, 43, 131, 0.5)",
+            0.6: "rgba(103, 23, 111, 0.6)",
+            0.8: "rgba(83, 3, 91, 0.7)",
+            1.0: "rgba(63, 0, 71, 0.8)",
+          };
+        }
+      };
 
-  const pollutionHeatLayer = L.heatLayer(pollutionData, {
-    radius: 45,
-    blur: 35,
-    maxZoom: 17,
-    max: 1.0,
-    gradient: getAQIGradient(liveData.airPollution.aqi),
-    minOpacity: 0.05
-  });
+      // Create main pollution heatmap
+      const pollutionData = generatePollutionHeatmap(
+        selectedLocation,
+        liveData.airPollution.aqi
+      );
 
-  layers.push(pollutionHeatLayer);
-  
-  // Add particle overlay for PM2.5 visualization
-  const createParticles = () => {
-    const particleMarkers = [];
-    const numParticles = Math.floor(liveData.airPollution.aqi / 2);
-    
-    for (let i = 0; i < numParticles; i++) {
-      const offset = 0.05;
-      const lat = selectedLocation.lat + (Math.random() - 0.5) * offset;
-      const lon = selectedLocation.lon + (Math.random() - 0.5) * offset;
-      const size = 1 + Math.random() * 3;
-      
-      const particleIcon = L.divIcon({
-        html: `<div style="
+      const pollutionHeatLayer = L.heatLayer(pollutionData, {
+        radius: 20,
+        blur: 25,
+        maxZoom: 17,
+        max: 1.0,
+        gradient: getAQIGradient(liveData.airPollution.aqi),
+        minOpacity: 0.3,
+      });
+
+      layers.push(pollutionHeatLayer);
+
+      // Add particle overlay for PM2.5 visualization
+      const createParticles = () => {
+        const particleMarkers = [];
+        const numParticles = Math.floor(liveData.airPollution.aqi / 2);
+
+        for (let i = 0; i < numParticles; i++) {
+          const offset = 0.05;
+          const lat = selectedLocation.lat + (Math.random() - 0.5) * offset;
+          const lon = selectedLocation.lon + (Math.random() - 0.5) * offset;
+          const size = 1 + Math.random() * 3;
+
+          const particleIcon = L.divIcon({
+            html: `<div style="
           width: ${size}px;
           height: ${size}px;
           background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
@@ -533,65 +678,60 @@ if (activeKPIs.airPollution && liveData.airPollution) {
           animation: float ${3 + Math.random() * 2}s ease-in-out infinite;
           animation-delay: ${Math.random() * 2}s;
         "></div>`,
-        className: 'pollution-particle',
-        iconSize: [size, size]
-      });
-      
-      const particle = L.marker([lat, lon], { 
-        icon: particleIcon,
-        interactive: false,
-        zIndexOffset: -1000
-      });
-      
-      particleMarkers.push(particle);
-    }
-    
-    return L.layerGroup(particleMarkers);
-  };
-  
-  // Add particles if AQI is high
-  if (liveData.airPollution.aqi > 50) {
-    layers.push(createParticles());
-  }
+            className: "pollution-particle",
+            iconSize: [size, size],
+          });
 
-  layersRef.current.airPollution = L.layerGroup(layers).addTo(map);
-} else if (layersRef.current.airPollution) {
+          const particle = L.marker([lat, lon], {
+            icon: particleIcon,
+            interactive: false,
+            zIndexOffset: -1000,
+          });
+
+          particleMarkers.push(particle);
+        }
+
+        return L.layerGroup(particleMarkers);
+      };
+
+      // Add particles if AQI is high
+      if (liveData.airPollution.aqi > 50) {
+        layers.push(createParticles());
+      }
+
+      layersRef.current.airPollution = L.layerGroup(layers).addTo(map);
+    } else if (layersRef.current.airPollution) {
       map.removeLayer(layersRef.current.airPollution);
       layersRef.current.airPollution = null;
     }
 
-    // Green Cover Polygons
+    // Green Cover
     if (activeKPIs.greenCover && liveData.greenCover) {
       if (layersRef.current.greenCover) {
         map.removeLayer(layersRef.current.greenCover);
       }
 
-      const polygons = [];
-      for (let i = 0; i < 8; i++) {
-        const baseOffset = 0.015;
-        const centerLat =
-          selectedLocation.lat + (Math.random() - 0.5) * baseOffset * 3;
-        const centerLng =
-          selectedLocation.lon + (Math.random() - 0.5) * baseOffset * 3;
+      // Generate heatmap data for green cover
+      const greenCoverData = generateGreenCoverHeatmap(
+        selectedLocation,
+        liveData.greenCover.percentage
+      );
 
-        const points = [];
-        for (let j = 0; j < 6; j++) {
-          const angle = (Math.PI * 2 * j) / 6;
-          points.push([
-            centerLat + Math.sin(angle) * baseOffset,
-            centerLng + Math.cos(angle) * baseOffset,
-          ]);
-        }
-
-        const polygon = L.polygon(points, {
-          color: "#228B22",
-          fillColor: "#90EE90",
-          fillOpacity: 0.4,
-          weight: 2,
-        });
-        polygons.push(polygon);
-      }
-      layersRef.current.greenCover = L.layerGroup(polygons).addTo(map);
+      layersRef.current.greenCover = L.heatLayer(greenCoverData, {
+        radius: 20, // Adjust radius for desired spread
+        blur: 25, // Adjust blur for smoothness
+        maxZoom: 17,
+        max: 1.0, // Maximum intensity value
+        gradient: {
+          0.0: "rgba(0, 0, 0, 0)", // Transparent
+          0.2: "rgba(144, 238, 144, 0.4)", // LightGreen
+          0.4: "rgba(60, 179, 113, 0.6)", // MediumSeaGreen
+          0.6: "rgba(34, 139, 34, 0.7)", // ForestGreen
+          0.8: "rgba(0, 100, 0, 0.8)", // DarkGreen
+          1.0: "rgba(0, 50, 0, 0.9)", // Very Dark Green
+        },
+        minOpacity: 0.5, // Minimum opacity for subtle edges
+      }).addTo(map);
     } else if (layersRef.current.greenCover) {
       map.removeLayer(layersRef.current.greenCover);
       layersRef.current.greenCover = null;
@@ -603,29 +743,56 @@ if (activeKPIs.airPollution && liveData.airPollution) {
         map.removeLayer(layersRef.current.waterPollution);
       }
 
-      const markers = [];
-      for (let i = 0; i < 5; i++) {
-        const offset = 0.025;
-        const lat = selectedLocation.lat + (Math.random() - 0.5) * offset * 2;
-        const lng = selectedLocation.lon + (Math.random() - 0.5) * offset * 2;
+      const waterQualityData = generateWaterQualityHeatmap(
+        selectedLocation,
+        liveData.waterPollution.quality
+      );
 
-        const quality = liveData.waterPollution.quality;
-        let iconColor = "blue";
-        if (quality < 50) iconColor = "red";
-        else if (quality < 70) iconColor = "orange";
+      // Define gradient based on water quality (good to bad)
+      const getWaterQualityGradient = (quality) => {
+        // Quality is 0-100, 100 is best.
+        // We want red for low quality, blue for high quality.
+        // Map quality to a 0-1 scale for gradient, where 0 is bad (red) and 1 is good (blue)
+        const normalizedQuality = quality / 100;
 
-        const icon = L.divIcon({
-          html: `<div style="background-color: ${iconColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; opacity: 0.7;"></div>`,
-          className: "water-quality-marker",
-          iconSize: [20, 20],
-        });
+        if (normalizedQuality > 0.7) {
+          // Good (mostly blue)
+          return {
+            0.0: "rgba(0, 0, 255, 0)", // Transparent blue
+            0.2: "rgba(0, 100, 255, 0.3)", // Light blue
+            0.5: "rgba(0, 150, 255, 0.5)", // Medium blue
+            0.8: "rgba(0, 200, 255, 0.6)", // Brighter blue
+            1.0: "rgba(0, 255, 255, 0.7)", // Cyan
+          };
+        } else if (normalizedQuality > 0.4) {
+          // Moderate (greenish-yellow to light blue)
+          return {
+            0.0: "rgba(0, 255, 0, 0)", // Transparent green
+            0.2: "rgba(100, 255, 0, 0.3)", // Yellow-green
+            0.5: "rgba(200, 255, 0, 0.5)", // Yellow
+            0.8: "rgba(255, 200, 0, 0.6)", // Orange-yellow
+            1.0: "rgba(255, 100, 0, 0.7)", // Orange
+          };
+        } else {
+          // Poor (reddish-brown)
+          return {
+            0.0: "rgba(255, 0, 0, 0)", // Transparent red
+            0.2: "rgba(255, 50, 0, 0.3)", // Orange-red
+            0.5: "rgba(200, 50, 0, 0.5)", // Darker orange
+            0.8: "rgba(150, 50, 0, 0.6)", // Brownish-orange
+            1.0: "rgba(100, 50, 0, 0.7)", // Dark brown
+          };
+        }
+      };
 
-        const marker = L.marker([lat, lng], { icon }).bindPopup(
-          `Water Quality: ${quality}%`
-        );
-        markers.push(marker);
-      }
-      layersRef.current.waterPollution = L.layerGroup(markers).addTo(map);
+      layersRef.current.waterPollution = L.heatLayer(waterQualityData, {
+        radius: 20, // Adjust radius for desired spread
+        blur: 25, // Adjust blur for smoothness
+        maxZoom: 17,
+        max: 1.0, // Maximum intensity value
+        gradient: getWaterQualityGradient(liveData.waterPollution.quality),
+        minOpacity: 0.3, // Minimum opacity for subtle edges
+      }).addTo(map);
     } else if (layersRef.current.waterPollution) {
       map.removeLayer(layersRef.current.waterPollution);
       layersRef.current.waterPollution = null;
@@ -637,33 +804,52 @@ if (activeKPIs.airPollution && liveData.airPollution) {
         map.removeLayer(layersRef.current.flood);
       }
 
-      const zones = [];
-      const risk = liveData.flood.risk;
-      let opacity = 0.2;
-      let color = "#4169E1";
+      const floodRiskData = generateFloodRiskHeatmap(
+        selectedLocation,
+        liveData.flood.risk
+      );
 
-      if (risk === "High") {
-        opacity = 0.4;
-        color = "#8B008B";
-      } else if (risk === "Moderate") {
-        opacity = 0.3;
-        color = "#9370DB";
-      }
+      // Define gradient based on flood risk level
+      const getFloodRiskGradient = (riskLevel) => {
+        if (riskLevel === "High") {
+          return {
+            0.0: "rgba(139, 0, 139, 0)", // Transparent
+            0.2: "rgba(139, 0, 139, 0.3)", // Dark Magenta
+            0.4: "rgba(148, 0, 211, 0.4)", // Dark Violet
+            0.6: "rgba(138, 43, 226, 0.5)", // Blue Violet
+            0.8: "rgba(147, 112, 219, 0.6)", // Medium Purple
+            1.0: "rgba(186, 85, 211, 0.7)", // Medium Orchid
+          };
+        } else if (riskLevel === "Moderate") {
+          return {
+            0.0: "rgba(75, 0, 130, 0)", // Transparent
+            0.2: "rgba(75, 0, 130, 0.3)", // Indigo
+            0.4: "rgba(106, 90, 205, 0.4)", // Slate Blue
+            0.6: "rgba(123, 104, 238, 0.5)", // Medium Slate Blue
+            0.8: "rgba(147, 112, 219, 0.6)", // Medium Purple
+            1.0: "rgba(176, 196, 222, 0.7)", // Light Steel Blue
+          };
+        } else {
+          // Low
+          return {
+            0.0: "rgba(65, 105, 225, 0)", // Transparent
+            0.2: "rgba(65, 105, 225, 0.2)", // Royal Blue
+            0.4: "rgba(100, 149, 237, 0.3)", // Cornflower Blue
+            0.6: "rgba(135, 206, 250, 0.4)", // Light Sky Blue
+            0.8: "rgba(173, 216, 230, 0.5)", // Light Blue
+            1.0: "rgba(176, 224, 230, 0.6)", // Powder Blue
+          };
+        }
+      };
 
-      // Create flood risk zones
-      for (let i = 1; i <= 3; i++) {
-        const circle = L.circle([selectedLocation.lat, selectedLocation.lon], {
-          color: color,
-          fillColor: color,
-          fillOpacity: opacity / i,
-          radius: 2000 * i,
-          weight: 1,
-          dashArray: "5, 10",
-        });
-        zones.push(circle);
-      }
-
-      layersRef.current.flood = L.layerGroup(zones).addTo(map);
+      layersRef.current.flood = L.heatLayer(floodRiskData, {
+        radius: 20, // Smaller radius for more defined areas
+        blur: 25, // Less blur for more distinct boundaries
+        maxZoom: 17,
+        max: 1.0,
+        gradient: getFloodRiskGradient(liveData.flood.risk),
+        minOpacity: 0.3,
+      }).addTo(map);
     } else if (layersRef.current.flood) {
       map.removeLayer(layersRef.current.flood);
       layersRef.current.flood = null;
@@ -778,7 +964,8 @@ if (activeKPIs.airPollution && liveData.airPollution) {
           )}
           {activeKPIs.greenCover && (
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded"></div>
+              {/* Updated legend indicator for green cover */}
+              <div className="w-3 h-3 bg-gradient-to-r from-lime-300 to-green-800 rounded"></div>
               <span className="text-xs text-gray-600 dark:text-neutral-400">
                 Green Cover
               </span>
@@ -786,7 +973,8 @@ if (activeKPIs.airPollution && liveData.airPollution) {
           )}
           {activeKPIs.waterPollution && (
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              {/* Updated legend indicator for water quality */}
+              <div className="w-3 h-3 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 rounded"></div>
               <span className="text-xs text-gray-600 dark:text-neutral-400">
                 Water Quality
               </span>
@@ -810,11 +998,11 @@ if (activeKPIs.airPollution && liveData.airPollution) {
 const KPIPage = () => {
   // **State Management**
   const [activeKPIs, setActiveKPIs] = useState({
-    temperature: true,
-    airPollution: true,
-    greenCover: true,
-    waterPollution: true,
-    flood: true,
+    temperature: false,
+    airPollution: false,
+    greenCover: false,
+    waterPollution: false,
+    flood: false,
   });
 
   const [selectedLocation, setSelectedLocation] = useState({
@@ -830,7 +1018,7 @@ const KPIPage = () => {
     waterPollution: null,
     flood: null,
   });
-    // State declarations
+  // State declarations
   const [map, setMap] = useState(null);
   const [aqiValue, setAqiValue] = useState(0);
 
@@ -839,66 +1027,68 @@ const KPIPage = () => {
   const [mapType, setMapType] = useState("map");
   const [isSearching, setIsSearching] = useState(false);
 
+  // **Create animated wind flow lines**
+  const createWindFlowLines = (L, map, center) => {
+    const windLines = [];
+    const numFlows = 15; // Number of wind flow lines
 
+    // Simulate wind direction (you can make this dynamic based on real data)
+    const windDirection = Math.random() * Math.PI * 2;
+    const windSpeed = 5 + Math.random() * 10; // km/h
 
-// **Create animated wind flow lines**
-const createWindFlowLines = (L, map, center) => {
-  const windLines = [];
-  const numFlows = 15; // Number of wind flow lines
-  
-  // Simulate wind direction (you can make this dynamic based on real data)
-  const windDirection = Math.random() * Math.PI * 2;
-  const windSpeed = 5 + Math.random() * 10; // km/h
-  
-  for (let i = 0; i < numFlows; i++) {
-    // Starting position with some randomization
-    const startOffset = 0.1;
-    const startLat = center.lat + (Math.random() - 0.5) * startOffset * 2;
-    const startLon = center.lon + (Math.random() - 0.5) * startOffset * 2;
-    
-    // Calculate end position based on wind direction
-    const distance = 0.05 + Math.random() * 0.1;
-    const endLat = startLat + Math.sin(windDirection) * distance;
-    const endLon = startLon + Math.cos(windDirection) * distance;
-    
-    // Create curved path for more natural flow
-    const midLat = (startLat + endLat) / 2 + (Math.random() - 0.5) * 0.02;
-    const midLon = (startLon + endLon) / 2 + (Math.random() - 0.5) * 0.02;
-    
-    // Create polyline with arrow decoration
-    const windLine = L.polyline(
-      [[startLat, startLon], [midLat, midLon], [endLat, endLon]], 
-      {
-        color: 'rgba(255, 255, 255, 0.6)',
-        weight: 2,
-        opacity: 0.7,
-        dashArray: '10, 10',
-        className: `wind-flow-line wind-flow-${i}`
-      }
-    );
-    
-    windLines.push(windLine);
-  }
-  
-  // Add CSS animation after a short delay
-  setTimeout(() => {
-    addWindFlowAnimation();
-  }, 100);
-  
-  return windLines;
-};
+    for (let i = 0; i < numFlows; i++) {
+      // Starting position with some randomization
+      const startOffset = 0.1;
+      const startLat = center.lat + (Math.random() - 0.5) * startOffset * 2;
+      const startLon = center.lon + (Math.random() - 0.5) * startOffset * 2;
 
-// **Add CSS animation for wind flow**
-const addWindFlowAnimation = () => {
-  // Check if style element already exists
-  let styleElement = document.getElementById('wind-flow-animation');
-  if (!styleElement) {
-    styleElement = document.createElement('style');
-    styleElement.id = 'wind-flow-animation';
-    document.head.appendChild(styleElement);
-  }
-  
-  styleElement.textContent = `
+      // Calculate end position based on wind direction
+      const distance = 0.05 + Math.random() * 0.1;
+      const endLat = startLat + Math.sin(windDirection) * distance;
+      const endLon = startLon + Math.cos(windDirection) * distance;
+
+      // Create curved path for more natural flow
+      const midLat = (startLat + endLat) / 2 + (Math.random() - 0.5) * 0.02;
+      const midLon = (startLon + endLon) / 2 + (Math.random() - 0.5) * 0.02;
+
+      // Create polyline with arrow decoration
+      const windLine = L.polyline(
+        [
+          [startLat, startLon],
+          [midLat, midLon],
+          [endLat, endLon],
+        ],
+        {
+          color: "rgba(255, 255, 255, 0.6)",
+          weight: 2,
+          opacity: 0.7,
+          dashArray: "10, 10",
+          className: `wind-flow-line wind-flow-${i}`,
+        }
+      );
+
+      windLines.push(windLine);
+    }
+
+    // Add CSS animation after a short delay
+    setTimeout(() => {
+      addWindFlowAnimation();
+    }, 100);
+
+    return windLines;
+  };
+
+  // **Add CSS animation for wind flow**
+  const addWindFlowAnimation = () => {
+    // Check if style element already exists
+    let styleElement = document.getElementById("wind-flow-animation");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "wind-flow-animation";
+      document.head.appendChild(styleElement);
+    }
+
+    styleElement.textContent = `
     @keyframes flowAnimation {
       0% {
         stroke-dashoffset: 0;
@@ -918,11 +1108,14 @@ const addWindFlowAnimation = () => {
     }
     
     /* Stagger animation for different lines */
-    ${Array.from({length: 15}, (_, i) => `
+    ${Array.from(
+      { length: 15 },
+      (_, i) => `
       .wind-flow-${i} {
         animation-delay: ${i * 0.2}s;
       }
-    `).join('')}
+    `
+    ).join("")}
     
     /* Arrow markers for wind direction */
     .wind-arrow {
@@ -940,77 +1133,76 @@ const addWindFlowAnimation = () => {
       }
     }
   `;
-};
+  };
 
-// **Create wind particle system**
-const createWindParticles = (L, map, center) => {
-  const particles = [];
-  const numParticles = 30;
-  
-  class WindParticle {
-    constructor(L, map, center) {
-      this.L = L;
-      this.map = map;
-      this.reset(center);
-      this.createMarker();
-    }
-    
-    reset(center) {
-      this.lat = center.lat + (Math.random() - 0.5) * 0.2;
-      this.lon = center.lon + (Math.random() - 0.5) * 0.2;
-      this.speed = 0.001 + Math.random() * 0.002;
-      this.direction = Math.random() * Math.PI * 2;
-      this.opacity = Math.random();
-      this.size = 2 + Math.random() * 4;
-    }
-    
-    createMarker() {
-      const icon = this.L.divIcon({
-        html: `<div class="wind-particle" style="
+  // **Create wind particle system**
+  const createWindParticles = (L, map, center) => {
+    const particles = [];
+    const numParticles = 30;
+
+    class WindParticle {
+      constructor(L, map, center) {
+        this.L = L;
+        this.map = map;
+        this.reset(center);
+        this.createMarker();
+      }
+
+      reset(center) {
+        this.lat = center.lat + (Math.random() - 0.5) * 0.2;
+        this.lon = center.lon + (Math.random() - 0.5) * 0.2;
+        this.speed = 0.001 + Math.random() * 0.002;
+        this.direction = Math.random() * Math.PI * 2;
+        this.opacity = Math.random();
+        this.size = 2 + Math.random() * 4;
+      }
+
+      createMarker() {
+        const icon = this.L.divIcon({
+          html: `<div class="wind-particle" style="
           width: ${this.size}px; 
           height: ${this.size}px; 
-          background: radial-gradient(circle, rgba(255,255,255,${this.opacity}) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(255,255,255,${this.opacity}) 0%, transparent 30%);
           border-radius: 50%;
         "></div>`,
-        className: 'wind-particle-marker',
-        iconSize: [this.size, this.size]
-      });
-      
-      this.marker = this.L.marker([this.lat, this.lon], { 
-        icon,
-        interactive: false 
-      });
-    }
-    
-    update() {
-      this.lat += Math.sin(this.direction) * this.speed;
-      this.lon += Math.cos(this.direction) * this.speed;
-      this.opacity *= 0.98;
-      
-      if (this.opacity < 0.1) {
-        this.reset({ lat: this.lat, lon: this.lon });
-      }
-      
-      this.marker.setLatLng([this.lat, this.lon]);
-    }
-  }
-  
-  // Create particles
-  for (let i = 0; i < numParticles; i++) {
-    const particle = new WindParticle(L, map, center);
-    particles.push(particle);
-  }
-  
-  // Animate particles
-  const animateParticles = () => {
-    particles.forEach(p => p.update());
-    requestAnimationFrame(animateParticles);
-  };
-  animateParticles();
-  
-  return particles.map(p => p.marker);
-};
+          className: "wind-particle-marker",
+          iconSize: [this.size, this.size],
+        });
 
+        this.marker = this.L.marker([this.lat, this.lon], {
+          icon,
+          interactive: false,
+        });
+      }
+
+      update() {
+        this.lat += Math.sin(this.direction) * this.speed;
+        this.lon += Math.cos(this.direction) * this.speed;
+        this.opacity *= 0.98;
+
+        if (this.opacity < 0.1) {
+          this.reset({ lat: this.lat, lon: this.lon });
+        }
+
+        this.marker.setLatLng([this.lat, this.lon]);
+      }
+    }
+
+    // Create particles
+    for (let i = 0; i < numParticles; i++) {
+      const particle = new WindParticle(L, map, center);
+      particles.push(particle);
+    }
+
+    // Animate particles
+    const animateParticles = () => {
+      particles.forEach((p) => p.update());
+      requestAnimationFrame(animateParticles);
+    };
+    animateParticles();
+
+    return particles.map((p) => p.marker);
+  };
 
   // **Toggle KPI Function**
   const toggleKPI = (kpi) => {
@@ -1150,9 +1342,9 @@ const createWindParticles = (L, map, center) => {
     fetchLiveData();
   }, [selectedLocation, activeKPIs]);
 
-  // **Auto-refresh every 5 minutes**
+  // **Auto-refresh every 2 minutes**
   useEffect(() => {
-    const interval = setInterval(fetchLiveData, 5 * 60 * 1000);
+    const interval = setInterval(fetchLiveData, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -1312,7 +1504,7 @@ const createWindParticles = (L, map, center) => {
           </div>
 
           {/* Location History */}
-          <div className="px-4 py-2 bg-gray-50 dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
+          {/* <div className="px-4 py-2 bg-gray-50 dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500 dark:text-neutral-400">
                 Recent Locations:
@@ -1332,7 +1524,7 @@ const createWindParticles = (L, map, center) => {
                 ))}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* **KPI Controls Panel with Live Data** */}

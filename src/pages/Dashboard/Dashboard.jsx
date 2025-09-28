@@ -21,7 +21,7 @@ import KPIPage from "./KPI/KPI";
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = React.useState(true);
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("kpi");
 
   React.useEffect(() => {
     if (isDarkMode) {
@@ -32,20 +32,21 @@ export default function Dashboard() {
   }, [isDarkMode]);
 
   const links = [
-    {
-      label: "Dashboard",
-      path: "dashboard",
-      icon: (
-        <LayoutDashboard className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Weather",
-      path: "weather",
-      icon: (
-        <Cloud className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+    // TODO: Add back Dashboard and Weather pages
+    // {
+    //   label: "Dashboard",
+    //   path: "dashboard",
+    //   icon: (
+    //     <LayoutDashboard className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
+    // {
+    //   label: "Weather",
+    //   path: "weather",
+    //   icon: (
+    //     <Cloud className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
     {
       label: "KPI",
       path: "kpi",
@@ -88,20 +89,21 @@ export default function Dashboard() {
         <Users className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Profile",
-      path: "profile",
-      icon: (
-        <UserCog className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Settings",
-      path: "settings",
-      icon: (
-        <Settings className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+    // TODO: Add back Profile and Settings pages
+    // {
+    //   label: "Profile",
+    //   path: "profile",
+    //   icon: (
+    //     <UserCog className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
+    // {
+    //   label: "Settings",
+    //   path: "settings",
+    //   icon: (
+    //     <Settings className="text-green-500 dark:text-blue-500 h-5 w-5 flex-shrink-0" />
+    //   ),
+    // },
   ];
 
   const handleLinkClick = (path) => {
