@@ -25,6 +25,7 @@
         "clsx": "^2.1.1",
         "cobe": "^0.6.5",
         "daisyui": "^5.1.13",
+        "embla-carousel-react": "^8.6.0",
         "framer-motion": "^12.23.19",
         "leaflet": "^1.9.4",
         "leaflet-defaulticon-compatibility": "^0.1.2",

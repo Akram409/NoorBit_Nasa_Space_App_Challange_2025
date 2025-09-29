@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import KPIPage from "./KPI/KPI";
 import UrbanBalancePage from "./UrbanBalance/UrbanBalancePage";
+import StorytellingPage from "./StoryTelling/StorytellingPage";
+
         // "vercel-build": "npm install --legacy-peer-deps && next build",
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -298,18 +300,18 @@ const AIInsightsPage = () => (
   </div>
 );
 
-const StorytellingPage = () => (
-  <div className="space-y-6">
-    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-      Storytelling
-    </h1>
-    <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
-      <p className="text-gray-600 dark:text-gray-300">
-        Data storytelling and narrative visualizations will be displayed here.
-      </p>
-    </div>
-  </div>
-);
+// const StorytellingPage = () => (
+//   <div className="space-y-6">
+//     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+//       Storytelling
+//     </h1>
+//     <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
+//       <p className="text-gray-600 dark:text-gray-300">
+//         Data storytelling and narrative visualizations will be displayed here.
+//       </p>
+//     </div>
+//   </div>
+// );
 
 const BlogPage = () => (
   <div className="space-y-6">
