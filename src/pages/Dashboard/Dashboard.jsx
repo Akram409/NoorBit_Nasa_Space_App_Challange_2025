@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import KPIPage from "./KPI/KPI";
 import UrbanBalancePage from "./UrbanBalance/UrbanBalancePage";
 import StorytellingPage from "./StoryTelling/StorytellingPage";
+import { AIChatPage } from "./AIChat/AIChatPage";
 
         // "vercel-build": "npm install --legacy-peer-deps && next build",
 export default function Dashboard() {
@@ -287,18 +288,18 @@ const WeatherPage = () => (
 //   </div>
 // );
 
-const AIInsightsPage = () => (
-  <div className="space-y-6">
-    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-      AI Insights
-    </h1>
-    <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
-      <p className="text-gray-600 dark:text-gray-300">
-        AI-powered insights and recommendations will be shown here.
-      </p>
-    </div>
-  </div>
-);
+// const AIInsightsPage = () => (
+//   <div className="space-y-6">
+//     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+//       AI Insights
+//     </h1>
+//     <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
+//       <p className="text-gray-600 dark:text-gray-300">
+//         AI-powered insights and recommendations will be shown here.
+//       </p>
+//     </div>
+//   </div>
+// );
 
 // const StorytellingPage = () => (
 //   <div className="space-y-6">
@@ -386,7 +387,7 @@ const MainPanel = ({ activePage }) => {
       case "urban-balance":
         return <UrbanBalancePage />;
       case "ai-insights":
-        return <AIInsightsPage />;
+        return <AIChatPage />;
       case "storytelling":
         return <StorytellingPage />;
       case "blog":
