@@ -1,7 +1,8 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import "./UrbanBalancePage.css";
+import { MapPin, Thermometer, Wind, Leaf, Droplets, CloudRain, RefreshCw, Search } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+
 
 // Fix for default markers in Leaflet
 const initializeLeafletIcons = (L) => {
@@ -28,6 +29,12 @@ const UrbanBalancePage = () => {
     humidity: 0,
     co2: 0,
     carbonFootprint: 0,
+    pm2_5: 0,
+    pm10: 0,
+    no2: 0,
+    windSpeed: 0,
+    urbanDensity: 0,
+    landSurfaceTemp: 0,
   });
   const [currentHealthScore, setCurrentHealthScore] = useState(48);
   const [projectedHealthScore, setProjectedHealthScore] = useState(75);
@@ -37,6 +44,20 @@ const UrbanBalancePage = () => {
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
   const [pollutionZones, setPollutionZones] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Simulation state
+  const [simulationValues, setSimulationValues] = useState({
+    greenCover: 35,
+    solarAdoption: 20,
+    publicTransport: 40,
+    wasteRecycling: 30,
+    waterConservation: 45,
+  });
+
+  const [simulatedData, setSimulatedData] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   // NASA API Configuration - Replace with your actual API key
   const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY || "DEMO_KEY";
@@ -57,11 +78,158 @@ const UrbanBalancePage = () => {
     geocoding: "https://nominatim.openstreetmap.org/search",
   };
 
+  // Handle simulation parameter changes
+  const handleSimulationChange = (paramId, value) => {
+    setSimulationValues(prev => ({
+      ...prev,
+      [paramId]: value[0] 
+    }));
+  };
+
+  // Calculate simulated environmental values
+  const calculateSimulatedValue = (metric) => {
+    const baseValue = environmentalData[metric] || 0;
+    let change = 0;
+
+    // Define baselines for percentage-based calculations
+    const baselineGreenCover = 35;
+    const baselineSolarAdoption = 20;
+    const baselinePublicTransport = 40;
+    const baselineWasteRecycling = 30;
+    const baselineWaterConservation = 45;
+
+    // Green Cover Impact
+    const greenCoverDiff = simulationValues.greenCover - baselineGreenCover;
+    if (metric === 'temperature') {
+      change += greenCoverDiff * -0.05; // More green = lower temp
+    } else if (metric === 'airQuality') {
+      change += greenCoverDiff * -0.3; // More green = better air (lower AQI)
+    } else if (metric === 'carbonFootprint') {
+      change += greenCoverDiff * -0.2;
+    }
+
+    // Solar Adoption Impact
+    const solarDiff = simulationValues.solarAdoption - baselineSolarAdoption;
+    if (metric === 'carbonFootprint') {
+      change += solarDiff * -0.4;
+    } else if (metric === 'airQuality') {
+      change += solarDiff * -0.2;
+    }
+
+    // Public Transport Impact
+    const transportDiff = simulationValues.publicTransport - baselinePublicTransport;
+    if (metric === 'airQuality') {
+      change += transportDiff * -0.4;
+    } else if (metric === 'carbonFootprint') {
+      change += transportDiff * -0.3;
+    } else if (metric === 'noise') {
+      change += transportDiff * -0.2;
+    }
+
+    // Waste Recycling Impact
+    const recycleDiff = simulationValues.wasteRecycling - baselineWasteRecycling;
+    if (metric === 'carbonFootprint') {
+      change += recycleDiff * -0.15;
+    } else if (metric === 'waterQuality') {
+      change += recycleDiff * 0.1; // More recycling = better water quality (higher %)
+    }
+
+    // Water Conservation Impact
+    const waterDiff = simulationValues.waterConservation - baselineWaterConservation;
+    if (metric === 'waterQuality') {
+      change += waterDiff * 0.3; // More conservation = better water quality (higher %)
+    }
+
+    // Apply change and ensure values stay within realistic bounds
+    let newValue = baseValue + change;
+    
+    // Clamp values to realistic ranges
+    switch(metric) {
+      case 'temperature':
+        newValue = Math.max(15, Math.min(45, newValue));
+        break;
+      case 'airQuality': // Lower AQI is better
+        newValue = Math.max(0, Math.min(200, newValue));
+        break;
+      case 'carbonFootprint':
+        newValue = Math.max(50, Math.min(500, newValue));
+        break;
+      case 'waterQuality': // Higher % is better
+        newValue = Math.max(0, Math.min(100, newValue));
+        break;
+      case 'noise': // Lower dB is better
+        newValue = Math.max(30, Math.min(100, newValue));
+        break;
+      default:
+        newValue = Math.max(0, Math.min(100, newValue));
+    }
+
+    return newValue;
+  };
+
+  // Calculate simulated health score
+  const calculateSimulatedHealthScore = () => {
+    const simulatedMetrics = {
+      airQuality: calculateSimulatedValue('airQuality'),
+      greenCover: simulationValues.greenCover,
+      waterQuality: calculateSimulatedValue('waterQuality'),
+      noise: calculateSimulatedValue('noise'),
+      carbonFootprint: calculateSimulatedValue('carbonFootprint'),
+      temperature: calculateSimulatedValue('temperature'),
+      humidity: environmentalData.humidity,
+      windSpeed: environmentalData.windSpeed,
+    };
+
+    return calculateHealthScore(simulatedMetrics);
+  };
+
+  // Apply simulation to the map and update environmental data
+  const applySimulation = () => {
+    const newSimulatedData = {
+      ...environmentalData,
+      temperature: calculateSimulatedValue('temperature'),
+      airQuality: calculateSimulatedValue('airQuality'),
+      carbonFootprint: calculateSimulatedValue('carbonFootprint'),
+      waterQuality: calculateSimulatedValue('waterQuality'),
+      noise: calculateSimulatedValue('noise'),
+      greenCover: simulationValues.greenCover,
+    };
+
+    setSimulatedData(newSimulatedData);
+    setEnvironmentalData(newSimulatedData);
+
+    const newHealthScore = calculateSimulatedHealthScore();
+    setCurrentHealthScore(newHealthScore);
+    setProjectedHealthScore(Math.min(100, newHealthScore + 10));
+
+    // Update map marker popup with new data
+    if (markerRef.current) {
+      markerRef.current.setPopupContent(`<div>
+        <strong>${selectedLocation.split(',')[0]}</strong><br/>
+        <span style="color: #4CAF50; font-weight: bold;">✓ Simulation Applied</span><br/>
+        Health Score: ${newHealthScore}%<br/>
+        Air Quality: ${newSimulatedData.airQuality?.toFixed(1)}<br/>
+        Green Cover: ${newSimulatedData.greenCover?.toFixed(1)}%<br/>
+        Temperature: ${newSimulatedData.temperature?.toFixed(1)}°C
+      </div>`);
+      markerRef.current.openPopup();
+    }
+
+    // Show success notification
+    showNotification('Simulation applied successfully! Map updated with new environmental data.', 'success');
+  };
+
+  // Notification system
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
+
   // NASA Earth Imagery API
   const fetchNASAImagery = async (lat, lon) => {
     try {
       const date = new Date();
-      date.setDate(date.getDate() - 1); // Get yesterday's image
+      date.setDate(date.getDate() - 1);
       const dateString = date.toISOString().split("T")[0];
 
       const url = `${NASA_APIS.imagery}?lon=${lon}&lat=${lat}&date=${dateString}&dim=0.10&api_key=${NASA_API_KEY}`;
@@ -100,7 +268,7 @@ const UrbanBalancePage = () => {
 
       const data = await response.json();
       return {
-        aqi: data.list[0]?.main?.aqi * 20 || 50, // Convert 1-5 scale to 0-100
+        aqi: data.list[0]?.main?.aqi * 20 || 50,
         co: data.list[0]?.components?.co || 300,
         no2: data.list[0]?.components?.no2 || 40,
         o3: data.list[0]?.components?.o3 || 80,
@@ -145,8 +313,6 @@ const UrbanBalancePage = () => {
   // Simulate NASA MODIS/Landsat data for vegetation and land use
   const fetchSatelliteData = async (lat, lon) => {
     try {
-      // In a real implementation, you would call NASA's MODIS or Landsat APIs
-      // For now, we'll simulate based on location characteristics
       const urbanDensity = calculateUrbanDensity(lat, lon);
       const vegetationIndex = calculateNDVI(lat, lon);
       const waterBodies = detectWaterBodies(lat, lon);
@@ -166,7 +332,6 @@ const UrbanBalancePage = () => {
 
   // Helper functions for NASA data simulation
   const calculateUrbanDensity = (lat, lon) => {
-    // Major cities density estimation based on coordinates
     const majorCities = {
       chittagong: { lat: 22.3569, lon: 91.7832, density: 75 },
       dhaka: { lat: 23.8103, lon: 90.4125, density: 95 },
@@ -193,14 +358,12 @@ const UrbanBalancePage = () => {
   };
 
   const calculateNDVI = (lat, lon) => {
-    // Simulate Normalized Difference Vegetation Index
     const seasonalFactor = Math.sin((new Date().getMonth() / 12) * 2 * Math.PI) * 0.2 + 0.8;
     const baseNDVI = Math.random() * 0.3 + 0.2;
     return Math.round(baseNDVI * seasonalFactor * 100);
   };
 
   const detectWaterBodies = (lat, lon) => {
-    // Detect water bodies based on geographical features
     const coastalCities = [
       { lat: 22.3569, lon: 91.7832 }, // Chittagong
       { lat: 19.076, lon: 72.8777 }, // Mumbai
@@ -236,7 +399,6 @@ const UrbanBalancePage = () => {
     try {
       console.log("Fetching environmental data for:", lat, lon);
 
-      // Parallel API calls for better performance
       const [nasaImageryData, airQualityData, weatherData, satelliteData] = await Promise.allSettled([
         fetchNASAImagery(lat, lon),
         fetchAirQualityData(lat, lon),
@@ -244,7 +406,6 @@ const UrbanBalancePage = () => {
         fetchSatelliteData(lat, lon),
       ]);
 
-      // Process and combine all data
       const combinedData = processEnvironmentalData({
         nasaImagery: nasaImageryData.status === "fulfilled" ? nasaImageryData.value : null,
         airQuality: airQualityData.status === "fulfilled" ? airQualityData.value : null,
@@ -257,7 +418,7 @@ const UrbanBalancePage = () => {
 
       const healthScore = calculateHealthScore(combinedData);
       setCurrentHealthScore(healthScore);
-      setProjectedHealthScore(Math.min(100, healthScore + 27)); // +27 improvement as shown in image
+      setProjectedHealthScore(Math.min(100, healthScore + 27));
 
     } catch (error) {
       console.error("Error fetching environmental data:", error);
@@ -309,6 +470,12 @@ const UrbanBalancePage = () => {
       humidity: Math.random() * 30 + 50,
       co2: isUrban ? Math.random() * 200 + 400 : Math.random() * 100 + 200,
       carbonFootprint: isUrban ? Math.random() * 150 + 250 : Math.random() * 100 + 150,
+      pm2_5: isUrban ? Math.random() * 30 + 20 : Math.random() * 15 + 5,
+      pm10: isUrban ? Math.random() * 50 + 30 : Math.random() * 25 + 10,
+      no2: isUrban ? Math.random() * 40 + 20 : Math.random() * 20 + 10,
+      windSpeed: Math.random() * 5 + 2,
+      urbanDensity: urbanDensity,
+      landSurfaceTemp: Math.random() * 15 + 25,
       lastUpdated: new Date().toISOString(),
     };
   };
@@ -359,7 +526,7 @@ const UrbanBalancePage = () => {
   const handleLocationSearch = async (location) => {
     if (!location.trim()) return;
 
-    setLoading(true);
+    setIsSearching(true);
     try {
       const geocodeUrl = `${EXTERNAL_APIS.geocoding}?format=json&q=${encodeURIComponent(location)}&limit=1`;
       const response = await fetch(geocodeUrl);
@@ -372,12 +539,14 @@ const UrbanBalancePage = () => {
         setCoordinates(newCoords);
         setSelectedLocation(display_name);
         await fetchEnvironmentalData(newCoords[0], newCoords[1]);
+      } else {
+        setError("Location not found. Please try another search term.");
       }
     } catch (error) {
       console.error("Geocoding error:", error);
       setError("Failed to search location. Please try again.");
     } finally {
-      setLoading(false);
+      setIsSearching(false);
     }
   };
 
@@ -395,7 +564,6 @@ const UrbanBalancePage = () => {
           mapInstance = L.map(mapRef.current).setView(coordinates, 12);
           mapInstanceRef.current = mapInstance;
 
-          // Add satellite tile layer like in the image
           L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: '© Esri © NASA',
             opacity: 0.8,
@@ -405,7 +573,7 @@ const UrbanBalancePage = () => {
           markerRef.current = marker;
 
           marker.bindPopup(`<div>
-            <strong>${selectedLocation}</strong><br/>
+            <strong>${selectedLocation.split(',')[0]}</strong><br/>
             Health Score: ${currentHealthScore}%<br/>
             Air Quality: ${environmentalData.airQuality?.toFixed(1)}<br/>
             Green Cover: ${environmentalData.greenCover?.toFixed(1)}%
@@ -448,8 +616,14 @@ const UrbanBalancePage = () => {
     if (mapInstanceRef.current && markerRef.current) {
       mapInstanceRef.current.setView(coordinates, 12);
       markerRef.current.setLatLng(coordinates);
+      markerRef.current.setPopupContent(`<div>
+        <strong>${selectedLocation.split(',')[0]}</strong><br/>
+        Health Score: ${currentHealthScore}%<br/>
+        Air Quality: ${environmentalData.airQuality?.toFixed(1)}<br/>
+        Green Cover: ${environmentalData.greenCover?.toFixed(1)}%
+      </div>`);
     }
-  }, [coordinates]);
+  }, [coordinates, selectedLocation, currentHealthScore, environmentalData]);
 
   useEffect(() => {
     fetchEnvironmentalData(coordinates[0], coordinates[1]);
@@ -461,303 +635,644 @@ const UrbanBalancePage = () => {
     return "#F44336";
   };
 
+  const getMetricColor = (value, type) => {
+    switch (type) {
+      case 'aqi':
+        if (value <= 50) return "#4CAF50";
+        if (value <= 100) return "#FFA726";
+        return "#F44336";
+      case 'greenCover':
+        if (value >= 60) return "#4CAF50";
+        if (value >= 30) return "#FFA726";
+        return "#F44336";
+      case 'waterQuality':
+        if (value >= 70) return "#2196F3";
+        if (value >= 50) return "#FFA726";
+        return "#F44336";
+      case 'noise':
+        if (value <= 50) return "#4CAF50";
+        if (value <= 70) return "#FFA726";
+        return "#F44336";
+      case 'temperature':
+        if (value >= 20 && value <= 28) return "#4CAF50";
+        return "#2196F3";
+      default:
+        return "#2196F3";
+    }
+  };
+
+  const getMetricStatus = (value, type) => {
+    switch (type) {
+      case 'aqi':
+        if (value <= 50) return "Good";
+        if (value <= 100) return "Moderate";
+        if (value <= 150) return "Unhealthy for Sensitive Groups";
+        if (value <= 200) return "Unhealthy";
+        return "Hazardous";
+      case 'greenCover':
+        if (value >= 60) return "Excellent";
+        if (value >= 30) return "Good";
+        return "Low";
+      case 'waterQuality':
+        if (value >= 70) return "Excellent";
+        if (value >= 50) return "Good";
+        return "Poor";
+      case 'noise':
+        if (value <= 50) return "Low";
+        if (value <= 70) return "Moderate";
+        return "High";
+      case 'temperature':
+        if (value >= 20 && value <= 28) return "Optimal";
+        if (value < 20) return "Cool";
+        return "Warm";
+      default:
+        return "";
+    }
+  };
+
+
   return (
-    <div style={{ 
-      backgroundColor: '#1a1a1a', 
-      color: 'white', 
-      minHeight: '100vh', 
-      fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif' 
-    }}>
-      {/* Header */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '15px 30px', 
-        backgroundColor: '#2a2a2a', 
-        borderBottom: '1px solid #444' 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+    <div className="space-y-6 p-6 bg-gray-50 dark:bg-neutral-900 min-h-screen">
+      {/* Search Bar */}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder="Enter location..."
-            value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleLocationSearch(e.target.value)}
-            style={{
-              backgroundColor: '#333',
-              border: '1px solid #555',
-              color: 'white',
-              padding: '8px 15px',
-              borderRadius: '5px',
-              width: '300px',
-              fontSize: '14px'
-            }}
+            placeholder="Search location (e.g., London, Tokyo, Paris)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleLocationSearch(searchQuery)}
+            className="w-full px-4 py-2 pr-20 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 rounded-lg text-sm text-gray-900 dark:text-neutral-100 placeholder-gray-500 dark:placeholder-neutral-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all shadow-sm"
           />
           <button
-            onClick={() => handleLocationSearch(selectedLocation)}
-            disabled={loading}
-            style={{
-              padding: '8px 15px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: loading ? 'not-allowed' : 'pointer'
-            }}
+            onClick={() => handleLocationSearch(searchQuery)}
+            disabled={isSearching || !searchQuery.trim()}
+            className="absolute right-1 top-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-neutral-600 text-white rounded text-sm font-medium transition-colors flex items-center gap-1"
           >
+            {isSearching ? (
+              <RefreshCw className="w-3 h-3 animate-spin" />
+            ) : (
+              <Search className="w-3 h-3" />
+            )}
             Search
           </button>
         </div>
-        <div style={{ display: 'flex', gap: '30px', fontSize: '14px' }}>
-          <span>Upload New Issues</span>
-          <span>Air Quality Index: Good</span>
-        </div>
       </div>
 
-      <div style={{ display: 'flex', height: 'calc(100vh - 70px)' }}>
-        {/* Left Panel - Map */}
-        <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
-          {/* Map Container */}
-          <div style={{ flex: 2, position: 'relative' }}>
-            <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
-            
-            {/* Map Info Overlay */}
-            <div style={{
-              position: 'absolute',
-              top: '20px',
-              left: '20px',
-              backgroundColor: 'rgba(42, 42, 42, 0.9)',
-              padding: '15px',
-              borderRadius: '8px',
-              zIndex: 1000,
-              minWidth: '200px'
-            }}>
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#4CAF50' }}>
-                Targeted Location:
-              </h3>
-              <p style={{ margin: '0 0 5px 0', fontSize: '14px' }}>
-                {selectedLocation.split(',')[0]}
-              </p>
-              <div style={{ fontSize: '12px', color: '#aaa' }}>
-                {coordinates[0].toFixed(4)}, {coordinates[1].toFixed(4)}
+      {/* Main Dashboard Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Panel - Map, Actions, and Simulation */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Map Card */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden shadow-sm dark:shadow-neutral-900/20 flex-1 min-h-[400px]">
+            <div className="relative h-full">
+              <div ref={mapRef} className="h-full w-full" />
+              
+              {/* Map Info Overlay */}
+              <div className="absolute top-4 left-4 bg-white dark:bg-neutral-800 rounded-lg p-3 shadow-lg border border-neutral-200 dark:border-neutral-700 z-[1000] min-w-[200px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-4 h-4 text-blue-500" />
+                  <span className="font-semibold text-gray-900 dark:text-neutral-100">
+                    {selectedLocation.split(',')[0]}
+                  </span>
+                  {loading && (
+                    <RefreshCw className="w-3 h-3 animate-spin text-blue-500" />
+                  )}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-neutral-400">
+                  Lat: {coordinates[0].toFixed(4)}, Lon: {coordinates[1].toFixed(4)}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Actions Panel */}
-          <div style={{
-            height: '40%',
-            backgroundColor: '#2a2a2a',
-            padding: '20px',
-            overflow: 'auto',
-            borderTop: '1px solid #444'
-          }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', color: '#4CAF50' }}>
+          {/* Actions Card */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-neutral-200 dark:border-neutral-700 shadow-sm dark:shadow-neutral-900/20">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">
               Actions
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 { title: "Plant More Trees", desc: "Increase green cover from 35% to 47%", icon: "🌳" },
                 { title: "Adopt Rooftop Solar", desc: "Reduce carbon footprint by 20-30%", icon: "☀️" },
                 { title: "Preserve Waterbodies", desc: "Improve water quality index", icon: "💧" },
                 { title: "Improve Public Transport", desc: "Reduce air pollution significantly", icon: "🚊" }
               ].map((action, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: '#333',
-                  padding: '15px',
-                  borderRadius: '8px',
-                  cursor: 'pointer'
-                }}>
-                  <div style={{ fontSize: '24px', marginRight: '15px' }}>
-                    {action.icon}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#4CAF50' }}>
-                      {action.title}
-                    </h4>
-                    <p style={{ margin: 0, fontSize: '12px', color: '#aaa' }}>
-                      {action.desc}
-                    </p>
+                <div key={idx} className="flex items-center bg-gray-50 dark:bg-neutral-700/50 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer">
+                  <div className="text-2xl mr-3">{action.icon}</div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-neutral-100">{action.title}</h4>
+                    <p className="text-xs text-gray-600 dark:text-neutral-400">{action.desc}</p>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Interactive Simulation Card */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700 shadow-sm dark:shadow-neutral-900/20">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-1">
+                  Environmental Impact Simulator
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-neutral-400">
+                  Adjust parameters to see real-time environmental impact
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setSimulationValues({
+                    greenCover: 35,
+                    solarAdoption: 20,
+                    publicTransport: 40,
+                    wasteRecycling: 30,
+                    waterConservation: 45,
+                  });
+                  showNotification('Simulation parameters reset.', 'info');
+                }}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-lg transition-colors flex items-center gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Reset
+              </button>
+            </div>
+
+            {/* Simulation Controls */}
+            <div className="space-y-6">
+              {[
+                {
+                  id: 'greenCover',
+                  label: 'Green Cover',
+                  icon: '🌳',
+                  unit: '%',
+                  min: 0,
+                  max: 100,
+                  step: 5,
+                  color: '#4CAF50',
+                },
+                {
+                  id: 'solarAdoption',
+                  label: 'Solar Energy Adoption',
+                  icon: '☀️',
+                  unit: '%',
+                  min: 0,
+                  max: 100,
+                  step: 5,
+                  color: '#FF9800',
+                },
+                {
+                  id: 'publicTransport',
+                  label: 'Public Transport Usage',
+                  icon: '🚊',
+                  unit: '%',
+                  min: 0,
+                  max: 100,
+                  step: 5,
+                  color: '#2196F3',
+                },
+                {
+                  id: 'wasteRecycling',
+                  label: 'Waste Recycling Rate',
+                  icon: '♻️',
+                  unit: '%',
+                  min: 0,
+                  max: 100,
+                  step: 5,
+                  color: '#8BC34A',
+                },
+                {
+                  id: 'waterConservation',
+                  label: 'Water Conservation',
+                  icon: '💧',
+                  unit: '%',
+                  min: 0,
+                  max: 100,
+                  step: 5,
+                  color: '#00BCD4',
+                },
+              ].map((param) => (
+                <div key={param.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{param.icon}</span>
+                      <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                        {param.label}
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-900 dark:text-neutral-100 min-w-[3rem] text-right">
+                        {simulationValues[param.id]}{param.unit}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleSimulationChange(param.id, [Math.max(param.min, simulationValues[param.id] - param.step)])}
+                          className="w-6 h-6 flex items-center justify-center bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded text-gray-600 dark:text-neutral-300 transition-colors"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleSimulationChange(param.id, [Math.min(param.max, simulationValues[param.id] + param.step)])}
+                          className="w-6 h-6 flex items-center justify-center bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded text-gray-600 dark:text-neutral-300 transition-colors"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Shadcn Slider */}
+                  <Slider
+                    value={[simulationValues[param.id]]}
+                    onValueChange={(value) => handleSimulationChange(param.id, value)}
+                    min={param.min}
+                    max={param.max}
+                    step={param.step}
+                    className="w-full"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Simulated Impact Results */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-neutral-700">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                </svg>
+                Projected Environmental Impact
+              </h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  {
+                    label: 'Temperature',
+                    current: environmentalData.temperature,
+                    simulated: calculateSimulatedValue('temperature'),
+                    unit: '°C',
+                    icon: '🌡️',
+                    inverse: true
+                  },
+                  {
+                    label: 'Air Quality',
+                    current: environmentalData.airQuality,
+                    simulated: calculateSimulatedValue('airQuality'),
+                    unit: ' AQI',
+                    icon: '💨',
+                    inverse: true
+                  },
+                  {
+                    label: 'Carbon Footprint',
+                    current: environmentalData.carbonFootprint,
+                    simulated: calculateSimulatedValue('carbonFootprint'),
+                    unit: ' kg',
+                    icon: '🏭',
+                    inverse: true
+                  },
+                  {
+                    label: 'Water Quality',
+                    current: environmentalData.waterQuality,
+                    simulated: calculateSimulatedValue('waterQuality'),
+                    unit: '%',
+                    icon: '💧',
+                    inverse: false
+                  },
+                  {
+                    label: 'Noise Level',
+                    current: environmentalData.noise,
+                    simulated: calculateSimulatedValue('noise'),
+                    unit: ' dB',
+                    icon: '🔊',
+                    inverse: true
+                  },
+                  {
+                    label: 'Health Score',
+                    current: currentHealthScore,
+                    simulated: calculateSimulatedHealthScore(),
+                    unit: '',
+                    icon: '❤️',
+                    inverse: false
+                  },
+                ].map((metric, idx) => {
+                  const change = metric.simulated - metric.current;
+                  const isImprovement = metric.inverse ? change < 0 : change > 0;
+                  
+                  return (
+                    <div key={idx} className="bg-gray-50 dark:bg-neutral-700/50 rounded-lg p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">{metric.icon}</span>
+                        <span className="text-xs font-medium text-gray-600 dark:text-neutral-400">
+                          {metric.label}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs text-gray-500 dark:text-neutral-400">
+                          {metric.current?.toFixed(1)}{metric.unit}
+                        </div>
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <div className="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                          {metric.simulated?.toFixed(1)}{metric.unit}
+                        </div>
+                      </div>
+                      
+                      <div className={`mt-2 flex items-center gap-1 text-xs font-medium ${
+                        isImprovement 
+                          ? 'text-green-600 dark:text-green-400' 
+                          : change === 0 
+                          ? 'text-gray-500 dark:text-neutral-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}>
+                        {change !== 0 && (
+                          <svg className={`w-3 h-3 ${isImprovement ? '' : 'rotate-180'}`} fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <span>
+                          {change === 0 ? 'No change' : `${isImprovement ? '' : '+'}${Math.abs(change).toFixed(1)}${metric.unit}`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Apply Simulation Button */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-neutral-700">
+              <button
+                onClick={applySimulation}
+                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Apply Simulation to Map
+              </button>
+              <p className="text-xs text-center text-gray-500 dark:text-neutral-400 mt-2">
+                See how these changes would affect your city's environment
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Right Panel - Metrics */}
-        <div style={{
-          flex: 1,
-          backgroundColor: '#2a2a2a',
-          padding: '20px',
-          overflow: 'auto',
-          borderLeft: '1px solid #444',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }}>
-          {/* Environmental Metrics */}
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+        {/* Right Panel - Metrics, Health Score, Suggestions */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          {/* Environmental Metrics Card */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-neutral-200 dark:border-neutral-700 shadow-sm dark:shadow-neutral-900/20">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">
+              Environmental Metrics
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
               {[
-                { label: "AQI", value: "24.7", status: "Good", color: "#4CAF50" },
-                { label: "Air Quality Index", value: "68.2%", status: "Poor", color: "#F44336" },
-                { label: "Green Cover", value: "55%", status: "", color: "#4CAF50" },
-                { label: "Crop Cover", value: "74%", status: "", color: "#2196F3" },
-                { label: "Water Quality", value: "84%", status: "", color: "#2196F3" },
-                { label: "Noise Pollution", value: "78%", status: "", color: "#2196F3" }
+                { label: "Air Quality Index", value: environmentalData.airQuality, type: 'aqi', unit: '' },
+                { label: "PM2.5", value: environmentalData.pm2_5, type: 'aqi', unit: ' µg/m³' },
+                { label: "PM10", value: environmentalData.pm10, type: 'aqi', unit: ' µg/m³' },
+                { label: "NO2", value: environmentalData.no2, type: 'aqi', unit: ' µg/m³' },
+                { label: "Green Cover", value: environmentalData.greenCover, type: 'greenCover', unit: '%' },
+                { label: "Water Quality", value: environmentalData.waterQuality, type: 'waterQuality', unit: '%' },
+                { label: "Noise Pollution", value: environmentalData.noise, type: 'noise', unit: ' dB' },
+                { label: "Temperature", value: environmentalData.temperature, type: 'temperature', unit: '°C' },
+                { label: "Humidity", value: environmentalData.humidity, type: 'default', unit: '%' },
+                { label: "Wind Speed", value: environmentalData.windSpeed, type: 'default', unit: ' m/s' },
+                { label: "CO2", value: environmentalData.co2, type: 'default', unit: ' ppm' },
+                { label: "Carbon Footprint", value: environmentalData.carbonFootprint, type: 'default', unit: ' kgCO2e' },
+                { label: "Urban Density", value: environmentalData.urbanDensity, type: 'default', unit: '%' },
+                { label: "Land Surface Temp", value: environmentalData.landSurfaceTemp, type: 'temperature', unit: '°C' },
               ].map((metric, idx) => (
-                <div key={idx} style={{ marginBottom: '15px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '12px', color: '#aaa' }}>{metric.label}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'white' }}>
-                        {metric.value}
+                <div key={idx}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-700 dark:text-neutral-300">{metric.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                        {metric.value?.toFixed(1)}{metric.unit}
                       </span>
-                      {metric.status && (
-                        <span style={{ 
-                          fontSize: '10px', 
-                          padding: '2px 6px', 
-                          backgroundColor: metric.color, 
-                          borderRadius: '3px',
-                          color: 'white'
-                        }}>
-                          {metric.status}
+                      {metric.type !== 'default' && (
+                        <span className="text-xs px-2 py-1 rounded-full text-white" style={{ backgroundColor: getMetricColor(metric.value, metric.type) }}>
+                          {getMetricStatus(metric.value, metric.type)}
                         </span>
                       )}
                     </div>
                   </div>
-                  <div style={{
-                    width: '100%',
-                    height: '8px',
-                    backgroundColor: '#444',
-                    borderRadius: '4px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{
-                      height: '100%',
-                      width: metric.value,
-                      backgroundColor: metric.color,
-                      borderRadius: '4px'
-                    }}></div>
+                  <div className="w-full h-2 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, metric.value)}%`,
+                        backgroundColor: getMetricColor(metric.value, metric.type),
+                      }}
+                    ></div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Current Health Score */}
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', color: '#4CAF50' }}>
-              Current City Health Score
-            </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '12px', color: '#aaa' }}>
-              Based on NASA Earth Data
-            </p>
-            <div style={{ position: 'relative', display: 'inline-block', margin: '20px 0' }}>
-              <svg width="200" height="200" viewBox="0 0 200 200">
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="80"
-                  fill="none"
-                  stroke="#333"
-                  strokeWidth="20"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="80"
-                  fill="none"
-                  stroke={getHealthScoreColor(currentHealthScore)}
-                  strokeWidth="20"
-                  strokeDasharray={`${currentHealthScore * 5.02} 502`}
-                  strokeLinecap="round"
-                  transform="rotate(-90 100 100)"
-                />
-              </svg>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center'
-              }}>
-                <span style={{ fontSize: '36px', fontWeight: 'bold', color: 'white' }}>
-                  {currentHealthScore}%
-                </span>
+          {/* Current Health Score Card */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700 shadow-sm dark:shadow-neutral-900/20">
+            <div className="text-center">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-neutral-100 mb-1">
+                Current City Health Score
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-neutral-400 mb-6">
+                Based on NASA Earth Data
+              </p>
+              
+              {/* Circular Progress */}
+              <div className="relative inline-flex items-center justify-center mb-6">
+                <svg className="transform -rotate-90" width="200" height="200">
+                  {/* Background Circle */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="85"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="12"
+                    className="dark:stroke-neutral-700"
+                  />
+                  {/* Progress Circle */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="85"
+                    fill="none"
+                    stroke={getHealthScoreColor(currentHealthScore)}
+                    strokeWidth="12"
+                    strokeDasharray={`${(currentHealthScore / 100) * 534.07} 534.07`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                
+                {/* Center Text */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-5xl font-bold text-gray-900 dark:text-neutral-100">
+                    {currentHealthScore}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+                    Health Score
+                  </span>
+                </div>
               </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#aaa' }}>
-              <span>0%</span>
-              <span>100%</span>
+
+              {/* Score Range Indicator */}
+              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400 px-4">
+                <span>Poor (0)</span>
+                <span>Excellent (100)</span>
+              </div>
+
+              {/* Status Badge */}
+              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
+                   style={{ 
+                     backgroundColor: `${getHealthScoreColor(currentHealthScore)}20`,
+                     color: getHealthScoreColor(currentHealthScore)
+                   }}>
+                <div className="w-2 h-2 rounded-full" 
+                     style={{ backgroundColor: getHealthScoreColor(currentHealthScore) }}></div>
+                {currentHealthScore >= 70 ? 'Good' : currentHealthScore >= 50 ? 'Moderate' : 'Needs Improvement'}
+              </div>
             </div>
           </div>
 
-          {/* After Suggested Actions - Matching the UI image */}
-          <div style={{
-            backgroundColor: '#1e3a3a',
-            padding: '20px',
-            borderRadius: '8px',
-            border: '2px solid #4CAF50'
-          }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#4CAF50' }}>
-              After Suggested Actions
-            </h3>
-            <div style={{ fontSize: '12px', color: '#aaa', marginBottom: '15px' }}>
-              Updated Projection
+          {/* After Suggested Actions Card */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-6 border border-green-200 dark:border-green-800 shadow-sm dark:shadow-neutral-900/20">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-green-800 dark:text-green-300">
+                  After Suggested Actions
+                </h3>
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  Projected Improvements
+                </p>
+              </div>
             </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px 0' }}>
-              <li style={{ fontSize: '12px', color: '#ccc', marginBottom: '5px' }}>
-                • Temperature: {environmentalData.temperature?.toFixed(1)}°C → {(environmentalData.temperature - 2)?.toFixed(1)}°C
-              </li>
-              <li style={{ fontSize: '12px', color: '#ccc', marginBottom: '5px' }}>
-                • AQI: {environmentalData.airQuality?.toFixed(0)} → {Math.max(15, environmentalData.airQuality - 15)?.toFixed(0)}
-              </li>
-              <li style={{ fontSize: '12px', color: '#ccc', marginBottom: '5px' }}>
-                • Green Cover: {environmentalData.greenCover?.toFixed(0)}% → {(environmentalData.greenCover + 12)?.toFixed(0)}%
-              </li>
-              <li style={{ fontSize: '12px', color: '#ccc', marginBottom: '5px' }}>
-                • City Health Score: {currentHealthScore}% → 75%
-              </li>
-            </ul>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <svg width="120" height="120" viewBox="0 0 120 120">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="45"
-                  fill="none"
-                  stroke="#333"
-                  strokeWidth="10"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="45"
-                  fill="none"
-                  stroke="#4CAF50"
-                  strokeWidth="10"
-                  strokeDasharray={`${75 * 2.83} 283`}
-                  strokeLinecap="round"
-                  transform="rotate(-90 60 60)"
-                />
-              </svg>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center'
-              }}>
-                <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>
-                  75%
+
+            {/* Improvement Metrics */}
+            <div className="space-y-3 mb-6">
+              {[
+                { 
+                  label: "Temperature", 
+                  current: environmentalData.temperature?.toFixed(1), 
+                  projected: (environmentalData.temperature - 2)?.toFixed(1),
+                  unit: "°C",
+                  icon: "🌡️"
+                },
+                { 
+                  label: "Air Quality Index", 
+                  current: environmentalData.airQuality?.toFixed(0), 
+                  projected: Math.max(15, environmentalData.airQuality - 15)?.toFixed(0),
+                  unit: "",
+                  icon: "💨"
+                },
+                { 
+                  label: "Green Cover", 
+                  current: environmentalData.greenCover?.toFixed(0), 
+                  projected: (environmentalData.greenCover + 12)?.toFixed(0),
+                  unit: "%",
+                  icon: "🌳"
+                },
+                { 
+                  label: "Water Quality", 
+                  current: environmentalData.waterQuality?.toFixed(0), 
+                  projected: Math.min(100, environmentalData.waterQuality + 8)?.toFixed(0),
+                  unit: "%",
+                  icon: "💧"
+                },
+              ].map((metric, idx) => (
+                <div key={idx} className="flex items-center justify-between bg-white/50 dark:bg-neutral-800/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{metric.icon}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                      {metric.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-neutral-400">
+                      {metric.current}{metric.unit}
+                    </span>
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-sm font-semibold text-green-700 dark:text-green-400">
+                      {metric.projected}{metric.unit}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Projected Health Score */}
+            <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-green-200 dark:border-green-700">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                  Projected Health Score
                 </span>
-                <div style={{ fontSize: '10px', color: '#4CAF50', marginTop: '5px' }}>
-                  +27 improvement
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {projectedHealthScore}
+                  </span>
+                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-full">
+                    <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                      +{projectedHealthScore - currentHealthScore}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="relative">
+                <div className="w-full h-3 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${projectedHealthScore}%` }}
+                  ></div>
+                </div>
+                
+                {/* Current Score Marker */}
+                <div 
+                  className="absolute top-0 h-3 w-1 bg-orange-500 rounded-full"
+                  style={{ left: `${currentHealthScore}%`, transform: 'translateX(-50%)' }}
+                >
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-orange-600 dark:text-orange-400 whitespace-nowrap">
+                    Current: {currentHealthScore}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400 mt-2">
+                <span>0</span>
+                <span>100</span>
+              </div>
+            </div>
+
+            {/* Action Summary */}
+            <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <p className="text-xs font-medium text-green-800 dark:text-green-300 mb-1">
+                    Implementation Timeline
+                  </p>
+                  <p className="text-xs text-green-700 dark:text-green-400">
+                    These improvements can be achieved within 6-12 months with consistent implementation of suggested actions.
+                  </p>
                 </div>
               </div>
             </div>
@@ -767,91 +1282,77 @@ const UrbanBalancePage = () => {
 
       {/* Loading Overlay */}
       {loading && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(26, 26, 26, 0.9)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 10000
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '3px solid #444',
-            borderTop: '3px solid #4CAF50',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            marginBottom: '20px'
-          }}></div>
-          <p>Loading NASA Environmental Data...</p>
-          <small>Fetching satellite imagery, air quality, and climate data</small>
-          <style>
-            {`
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `}
-          </style>
+        <div className="fixed inset-0 bg-neutral-900/90 flex flex-col justify-center items-center z-[10000] text-white">
+          <div className="w-12 h-12 border-4 border-gray-400 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+          <p className="text-lg mb-2">Loading NASA Environmental Data...</p>
+          <small className="text-gray-400">Fetching satellite imagery, air quality, and climate data</small>
         </div>
       )}
 
       {/* Error Display */}
       {error && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          backgroundColor: '#f44336',
-          color: 'white',
-          padding: '15px',
-          borderRadius: '5px',
-          zIndex: 10000,
-          maxWidth: '400px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{error}</span>
+        <div className="fixed top-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-lg z-[10000] max-w-sm flex items-center justify-between">
+          <span>{error}</span>
+          <button 
+            onClick={() => setError(null)}
+            className="ml-4 text-white hover:text-gray-200 transition-colors"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed bottom-4 right-4 z-[10000] max-w-md animate-slide-up`}>
+          <div className={`rounded-lg shadow-lg border p-4 flex items-start gap-3 ${
+            notification.type === 'success'
+              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+              : notification.type === 'error'
+              ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+          }`}>
+            <span className={`flex-shrink-0 ${
+              notification.type === 'success' ? 'text-green-600 dark:text-green-400' :
+              notification.type === 'error' ? 'text-red-600 dark:text-red-400' :
+              'text-blue-600 dark:text-blue-400'
+            }`}>
+              {notification.type === 'success' && (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+              {notification.type === 'error' && (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+              {notification.type === 'info' && (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              )}
+            </span>
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${
+                notification.type === 'success' ? 'text-green-800 dark:text-green-300' :
+                notification.type === 'error' ? 'text-red-800 dark:text-red-300' :
+                'text-blue-800 dark:text-blue-300'
+              }`}>
+                {notification.message}
+              </p>
+            </div>
             <button 
-              onClick={() => setError(null)}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                color: 'white', 
-                cursor: 'pointer', 
-                fontSize: '16px',
-                marginLeft: '10px'
-              }}
+              onClick={() => setNotification(null)} 
+              className="ml-auto text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors"
             >
-              ×
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
       )}
-
-      {/* NASA Data Sources Info */}
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        left: '20px',
-        backgroundColor: 'rgba(42, 42, 42, 0.9)',
-        padding: '10px',
-        borderRadius: '5px',
-        fontSize: '11px',
-        color: '#aaa',
-        zIndex: 1000
-      }}>
-        <div style={{ color: '#4CAF50', marginBottom: '5px' }}>NASA Data Sources:</div>
-        <div>• Earth Imagery API</div>
-        <div>• MODIS Land Surface Temperature</div>
-        <div>• Landsat NDVI Vegetation Index</div>
-        <div>• OpenWeatherMap Air Quality</div>
-      </div>
     </div>
   );
 };
