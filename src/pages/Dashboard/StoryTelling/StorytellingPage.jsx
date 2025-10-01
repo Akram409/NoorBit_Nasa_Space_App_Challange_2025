@@ -37,13 +37,13 @@ const StorytellingPage = () => {
         {/* Show Books Only When User Types */}
         {searchTerm.trim() !== "" &&
           (filteredBooks.length > 0 ? (
-            <div className="grid grid-cols-4 gap-2.5 mt-2.5">
+            <div className="grid grid-rows-1 lg:grid-cols-4 gap-2.5 mt-2.5">
               {filteredBooks.map((Books) => (
-                <div key={Books.id} style={{ textAlign: "center" }}>
+                <div key={Books.id} className="flex gap-2">
                   <img
                     src={Books.image}
                     alt={Books.title}
-                    style={{ width: "100%", borderRadius: "8px" }}
+                    className="w-14 rounded-sm"
                   />
                   <p>{Books.title}</p>
                 </div>
@@ -90,7 +90,7 @@ const StorytellingPage = () => {
                   <img
                     src={Books.image}
                     alt={Books.title}
-                    className="w-full h-40  rounded-md"
+                    className="w-full  rounded-md"
                   />
 
                   {/* Hover Overlay */}
