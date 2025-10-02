@@ -20,6 +20,7 @@ import KPIPage from "./KPI/KPI";
 import UrbanBalancePage from "./UrbanBalance/UrbanBalancePage";
 import StorytellingPage from "./StoryTelling/StorytellingPage";
 import BlogPage from "./Blog/BlogPage";
+import CommunityPage from "../Community/CommunityPage";
 import { AIChatPage } from "./AIChat/AIChatPage";
 
 // "vercel-build": "npm install --legacy-peer-deps && next build",
@@ -326,18 +327,18 @@ const WeatherPage = () => (
 //   </div>
 // );
 
-const CommunityPage = () => (
-  <div className="space-y-6">
-    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-      Community
-    </h1>
-    <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
-      <p className="text-gray-600 dark:text-gray-300">
-        Community discussions and interactions will be displayed here.
-      </p>
-    </div>
-  </div>
-);
+// const CommunityPage = () => (
+//   <div className="space-y-6">
+//     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+//       Community
+//     </h1>
+//     <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
+//       <p className="text-gray-600 dark:text-gray-300">
+//         Community discussions and interactions will be displayed here.
+//       </p>
+//     </div>
+//   </div>
+// );
 
 const ProfilePage = () => (
   <div className="space-y-6">
